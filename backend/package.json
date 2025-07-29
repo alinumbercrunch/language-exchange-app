@@ -1,0 +1,40 @@
+{
+  "name": "languageexchangeapp",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+        "dev": "tsx src/index.ts"
+
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alinumbercrunch/language-exchange-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alinumbercrunch/language-exchange-app/issues"
+  },
+  "homepage": "https://github.com/alinumbercrunch/language-exchange-app#readme",
+  "description": "",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.16.5",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.1.0",
+    "@types/passport-local": "^1.0.38",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  }
+}
