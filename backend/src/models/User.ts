@@ -1,6 +1,6 @@
 // backend/src/models/User.ts (UPDATED - Reflecting latest user.interface.ts changes)
 import mongoose, { HydratedDocument , Schema } from 'mongoose';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 import { IUser } from '../../../shared/user.interface'; ;
 
 // Define IUserDocument as a HydratedDocument of IUser
