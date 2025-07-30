@@ -26,6 +26,12 @@ const UserSchema: Schema<IUserDocument> = new Schema({
     passwordHash: {
         type: String,
         required: [true, 'Password is required'],
+        select: false,
+         set: (plainPassword: string) => { // <--- ADD THIS SETTER
+            if (!plainPassword) return plainPassword; // Handle cases where it might be empty
+            const salt = bcrypt.genSaltSync(10); // Use sync for setter
+            return bcrypt.hashSync(plainPassword, salt);
+        },
     },
     firstName: {
         type: String,
@@ -80,12 +86,22 @@ const UserSchema: Schema<IUserDocument> = new Schema({
     }
 });
 
-UserSchema.pre<IUserDocument>('save', async function(next) {
-    if (!this.isModified('passwordHash')) {
-        return next();
+// Corrected and simpler pre-save hook
+UserSchema.pre('save', async function (next) {
+    const user = this as IUserDocument & { _plainPassword?: string };
+
+    // Only hash the password if a plain password was provided (via the virtual setter)
+    // and the document is new, or if the plain password was modified.
+    // We check `user._plainPassword` because that's what the virtual setter populates.
+    if (!user._plainPassword) {
+        return next(); // No plain password provided, nothing to hash.
     }
+
+    // If a plain password exists, hash it
     const salt = await bcrypt.genSalt(10);
-    this.passwordHash = await bcrypt.hash(this.passwordHash, salt);
+    user.passwordHash = await bcrypt.hash(user._plainPassword, salt);
+    user._plainPassword = undefined; // Clear the temporary plain password after hashing
+
     next();
 });
 
