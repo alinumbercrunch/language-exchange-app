@@ -6,11 +6,13 @@ const router = Router(); // Create a new Express router
 
 // Define the registration route
 // When a POST request comes to /api/users/register, it will be handled by registerUser
-router.post('/register', registerUser);
+import { validateRegistration, validateLogin } from '../middleware/userValidators';
+
+router.post('/register', validateRegistration, registerUser);
 
 // Define the login route
 // When a POST request comes to /api/users/login, it will be handled by loginUser
-router.post('/login', loginUser);
+router.post('/login', validateLogin, loginUser);
 
 router.get(
     '/profile',
