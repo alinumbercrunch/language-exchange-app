@@ -28,7 +28,12 @@ app.get('/', (req, res) => {
     res.send('API is running...');
 });
 
+import errorHandler from './middleware/errorHandler';
+
 app.use('/api/users', userRoutes);
+
+// Error Handling Middleware
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
