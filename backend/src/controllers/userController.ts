@@ -1,7 +1,11 @@
 import { Request, Response } from 'express';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken'; // JWT for authentication
-import User from '../models/User'; // Your User model
+import User, { IUserDocument } from '../models/User'; // Your User model
+
+interface AuthenticatedRequest extends Request { // <--- This now correctly extends the imported Request
+    user?: IUserDocument;
+}
 
 // Helper function to generate a JWT
 const generateToken = (id: string) => {
@@ -104,5 +108,28 @@ export const loginUser = async (req: Request, res: Response) => {
     } catch (error: any) {
         console.error('Error in loginUser:', error);
         res.status(500).json({ message: 'Server error during login.' });
+    }
+};
+
+
+// @desc    Get authenticated user profile
+// @route   GET /api/users/profile
+// @access  Private (requires JWT token)
+export const getUserProfile = async (req: AuthenticatedRequest, res: Response) => {
+    // Passport.js will have successfully authenticated the user and attached
+    // their document to req.user if the token was valid.
+    if (req.user) {
+        // Use .toJSON() on the Mongoose document to apply your transform
+        // and omit the passwordHash from the response.
+        const user = req.user.toJSON();
+        res.status(200).json({
+            message: 'User profile fetched successfully!',
+            user: user
+        });
+    } else {
+        // This 'else' block should ideally not be hit if Passport.js middleware is working correctly
+        // because Passport.js would have already sent a 401 if authentication failed.
+        // It's here as a fallback/type safety.
+        res.status(401).json({ message: 'Not authorized, user data not found after authentication.' });
     }
 };

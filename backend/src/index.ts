@@ -5,8 +5,11 @@ import dotenv from 'dotenv';
 import connectDB from './config/db';
 import userRoutes from './routes/userRoutes';
 import cors from 'cors'; 
+import passport from 'passport'; // Import the passport library
+import configurePassport from './config/passport';
 
 dotenv.config();
+connectDB();
 
 const app = express();
 
@@ -16,7 +19,10 @@ app.use(cors());
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-connectDB();
+app.use(passport.initialize());
+// Configure Passport with your JWT strategy (pass the passport instance)
+configurePassport(passport);
+
 
 app.get('/', (req, res) => {
     res.send('API is running...');
