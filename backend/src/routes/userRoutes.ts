@@ -1,5 +1,6 @@
-import { Router } from 'express';
-import { registerUser, loginUser } from '../controllers/userController'; // Import the controller function
+import { RequestHandler, Router } from 'express';
+import { registerUser, loginUser, getUserProfile } from '../controllers/userController'; // Import the controller function
+import passport from 'passport'; 
 
 const router = Router(); // Create a new Express router
 
@@ -10,6 +11,13 @@ router.post('/register', registerUser);
 // Define the login route
 // When a POST request comes to /api/users/login, it will be handled by loginUser
 router.post('/login', loginUser);
+
+router.get(
+    '/profile',
+    passport.authenticate('jwt', { session: false }), // This is the protection middleware
+    getUserProfile as RequestHandler // Your controller function to get the profile
+);
+
 export default router; // Export the router to be used in index.ts
 
 // Define the user login route
