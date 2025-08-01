@@ -3,6 +3,7 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken'; // JWT for authentication
 import User from '../models/User';
 import { AuthenticatedRequest, IUserDocument } from '../types/declarations';
+import AppError from '../utils/appError'
 
 // Helper function to generate a JWT
 const generateToken = (id: string) => {
@@ -28,14 +29,12 @@ export const registerUser = asyncHandler(async (req: Request, res: Response) => 
     // 2. Check if user already exists
     const userExists = await User.findOne({ email }); // Check by email
     if (userExists) {
-        res.status(400).json({ message: 'User with that email already exists.' });
-        return;
+         throw new AppError('User with that email already exists.', 400);
     }
 
     const usernameExists = await User.findOne({ username }); // Check by username
     if (usernameExists) {
-        res.status(400).json({ message: 'Username is already taken.' });
-        return;
+        throw new AppError('Username is already taken.', 400);
     }
 
     // 3. Create new user instance (using the User model)
@@ -71,13 +70,14 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     // 1. Find user by email
     const user = await User.findOne({ email }).select('+passwordHash');
     if (!user) {
-          return res.status(401).json({ message: 'Invalid credentials.' });
+        throw new AppError('Invalid credentials.', 401);
     }
+
 
     // 2. Compare passwords
     const isMatch = await bcrypt.compare(password, user.passwordHash);
     if (!isMatch) {
-        return res.status(400).json({ message: 'Invalid email or password.' });
+        throw new AppError('Invalid email or password.', 401);
     }
 
     // 3. Send success response (excluding passwordHash)
@@ -107,6 +107,25 @@ export const getUserProfile = asyncHandler<AuthenticatedRequest>(async (req, res
         // This 'else' block should ideally not be hit if Passport.js middleware is working correctly
         // because Passport.js would have already sent a 401 if authentication failed.
         // It's here as a fallback/type safety.
-        res.status(401).json({ message: 'Not authorized, user data not found after authentication.' });
+        throw new AppError('Not authorized, user data not found after authentication.', 401);
     }
+});
+
+// @desc    Delete authenticated user's profile
+// @route   DELETE /api/users/profile
+// @access  Private
+export const deleteUserProfile = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    // We use req.user._id to ensure the user can only delete their own profile.;
+
+    const user = await User.findByIdAndDelete(req.user!._id);
+
+    if (!user) {
+        // This case should ideally not be reached on a protected route,
+        // but it's a good safety check.
+        throw new AppError('User not found.', 404);
+    }
+
+    res.status(200).json({
+        message: 'User profile deleted successfully.'
+    });
 });

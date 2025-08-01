@@ -6,7 +6,7 @@ export interface AuthenticatedRequest extends Request {
     user?: IUserDocument;
 }
 
-export interface AppError extends Error {
+export interface ErrorType extends Error {
     statusCode?: number;
 }
 
