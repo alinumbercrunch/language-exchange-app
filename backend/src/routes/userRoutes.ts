@@ -1,5 +1,5 @@
 import { RequestHandler, Router } from 'express';
-import { registerUser, loginUser, getUserProfile } from '../controllers/userController'; // Import the controller function
+import { registerUser, loginUser, getUserProfile, deleteUserProfile } from '../controllers/userController'; // Import the controller function
 import passport from 'passport'; 
 
 const router = Router(); // Create a new Express router
@@ -18,6 +18,12 @@ router.get(
     '/profile',
     passport.authenticate('jwt', { session: false }), // This is the protection middleware
     getUserProfile as RequestHandler // Your controller function to get the profile
+);
+
+router.delete(
+    '/profile', // The path for this endpoint
+    passport.authenticate('jwt', { session: false }), // The gatekeeper middleware
+    deleteUserProfile as RequestHandler // The controller function that does the work
 );
 
 export default router; // Export the router to be used in index.ts

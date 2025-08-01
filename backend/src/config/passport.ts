@@ -12,6 +12,8 @@ dotenv.config();
  * If valid, it finds the user in the database and attaches them to req.user.
  */
 const configurePassport = (passport: PassportStatic) => {
+    const secret = process.env.JWT_SECRET;
+    // console.log('Passport JWT Secret:', secret);
     // Options for the JWT strategy
     const opts = {
         // How to extract the JWT from the request
