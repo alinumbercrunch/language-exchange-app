@@ -1,11 +1,8 @@
 import { Request, Response } from 'express';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken'; // JWT for authentication
-import User, { IUserDocument } from '../models/User'; // Your User model
-
-interface AuthenticatedRequest extends Request { // <--- This now correctly extends the imported Request
-    user?: IUserDocument;
-}
+import User from '../models/User';
+import { AuthenticatedRequest, IUserDocument } from '../types/declarations';
 
 // Helper function to generate a JWT
 const generateToken = (id: string) => {
