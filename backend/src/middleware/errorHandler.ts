@@ -1,9 +1,7 @@
 
 import { Request, Response, NextFunction } from 'express';
 
-interface AppError extends Error {
-    statusCode?: number;
-}
+import { AppError } from '../types/declarations';
 
 const errorHandler = (err: AppError, req: Request, res: Response, next: NextFunction) => {
     const statusCode = err.statusCode || 500;
