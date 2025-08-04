@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken'; // JWT for authentication
 import User from '../models/User';
-import { AuthenticatedRequest, IUserDocument } from '../types/declarations';
+import { AuthenticatedRequest } from '../types/declarations';
 import AppError from '../utils/appError'
 
 // Helper function to generate a JWT
@@ -116,6 +116,9 @@ export const getUserProfile = asyncHandler<AuthenticatedRequest>(async (req, res
 // @access  Private
 export const deleteUserProfile = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     // We use req.user._id to ensure the user can only delete their own profile.;
+     if (!req.user) {
+        throw new AppError('Authentication error, user not found.', 401);
+    }
 
     const user = await User.findByIdAndDelete(req.user!._id);
 
@@ -127,5 +130,32 @@ export const deleteUserProfile = asyncHandler(async (req: AuthenticatedRequest, 
 
     res.status(200).json({
         message: 'User profile deleted successfully.'
+    });
+});
+
+// @desc    Update user profile
+// @route   PUT /api/users/profile
+// @access  Private
+export const updateUserProfile = asyncHandler<AuthenticatedRequest>(async (req, res) => {
+    const user = await User.findById(req.user!.id);
+
+    if (!user) {
+        throw new AppError('User not found.', 404);
+    }
+
+    // Update user fields if they are present in the request body
+    user.username = req.body.username || user.username;
+    user.email = req.body.email || user.email;
+    user.firstName = req.body.firstName || user.firstName;
+    user.familyName = req.body.familyName || user.familyName;
+    user.bio = req.body.bio || user.bio;
+    
+    // Save the updated user document
+    const updatedUser = await user.save();
+
+    // Respond with the updated user data
+    res.status(200).json({
+        message: 'User profile updated successfully!',
+        user: updatedUser.toJSON()
     });
 });

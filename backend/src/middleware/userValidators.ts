@@ -27,3 +27,20 @@ export const validateLogin = [
         next();
     },
 ];
+
+export const validateUpdate = [
+    // All fields are optional but must pass their validation if present
+    body('username').optional().notEmpty().withMessage('Username is required'),
+    body('email').optional().isEmail().withMessage('Please include a valid email'),
+    body('firstName').optional().notEmpty().withMessage('First name is required'),
+    body('familyName').optional().notEmpty().withMessage('Family name is required'),
+    body('bio').optional().isString().withMessage('Bio must be a string'),
+
+    (req: Request, res: Response, next: NextFunction) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        next();
+    },
+];
