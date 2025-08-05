@@ -26,6 +26,7 @@ async function testBackendConnection(): Promise<string> {
  * The main landing page of the application.
  * It features a welcome message and a status check for the backend connection.
  */
+  export default function Home() {
   // Use our new hook to handle the async logic
   const { data: apiResponse, error, isLoading } = useAsync(useCallback(() => testBackendConnection(), []));
 

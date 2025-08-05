@@ -31,6 +31,7 @@ export const validateLogin = [
 /**
  * Middleware to validate the request body for user profile updates.
  */
+export const validateUpdate = [
     // All fields are optional but must pass their validation if present
     body('username').optional().notEmpty().withMessage('Username is required'),
     body('email').optional().isEmail().withMessage('Please include a valid email'),
