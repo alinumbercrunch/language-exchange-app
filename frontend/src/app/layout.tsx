@@ -6,7 +6,10 @@ export const metadata = {
   description: 'Connect and converse globally',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+/**
+ * The root layout for the application.
+ * It sets up the basic HTML structure and includes global styles.
+ */
   return (
     <html lang="en">
       <body className="bg-white text-gray-900">{children}</body>

@@ -133,9 +133,11 @@ export const deleteUserProfile = asyncHandler(async (req: AuthenticatedRequest, 
     });
 });
 
-// @desc    Update user profile
-// @route   PUT /api/users/profile
-// @access  Private
+/**
+ * @desc    Update user profile
+ * @route   PUT /api/users/profile
+ * @access  Private
+ */
 export const updateUserProfile = asyncHandler<AuthenticatedRequest>(async (req, res) => {
     const user = await User.findById(req.user!.id);
 

@@ -6,7 +6,9 @@ import { IUser } from '../../../shared/user.interface'; ;
 // Define IUserDocument as a HydratedDocument of IUser
 // This correctly gives it all properties of IUser AND Mongoose Document methods/properties. HydratedDocument is a utility type. It takes the IUser and returns a new type including Mongoose's Types with the one of IUser so the ID from Mongoose is used instead of the string ID from the interface.
 import { IUserDocument } from '../types/declarations';
-const UserSchema: Schema<IUserDocument> = new Schema({
+/**
+ * Mongoose schema for the User model.
+ */
     username: {
         type: String,
         required: [true, 'Username is required'],
