@@ -3,8 +3,10 @@
 import mongoose from 'mongoose';
 import * as dotenv from 'dotenv';
 
-// Load environment variables from .env file
-dotenv.config();
+/**
+ * Establishes a connection to the MongoDB database using the URI from environment variables.
+ * Exits the process if the connection fails.
+ */
 
 const connectDB = async () => {
     try {
