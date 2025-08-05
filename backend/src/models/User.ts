@@ -1,14 +1,13 @@
-// backend/src/models/User.ts (UPDATED - Reflecting latest user.interface.ts changes)
-import mongoose, { HydratedDocument , Schema } from 'mongoose';
+// backend/src/models/User.ts
+import mongoose, { HydratedDocument, Schema } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { IUser } from '../../../shared/user.interface'; ;
-
-// Define IUserDocument as a HydratedDocument of IUser
-// This correctly gives it all properties of IUser AND Mongoose Document methods/properties. HydratedDocument is a utility type. It takes the IUser and returns a new type including Mongoose's Types with the one of IUser so the ID from Mongoose is used instead of the string ID from the interface.
+import { IUser } from '../../../shared/user.interface';
 import { IUserDocument } from '../types/declarations';
+
 /**
  * Mongoose schema for the User model.
  */
+const UserSchema = new Schema<IUserDocument>({
     username: {
         type: String,
         required: [true, 'Username is required'],
@@ -26,9 +25,9 @@ import { IUserDocument } from '../types/declarations';
         type: String,
         required: [true, 'Password is required'],
         select: false,
-         set: (plainPassword: string) => { // <--- ADD THIS SETTER
-            if (!plainPassword) return plainPassword; // Handle cases where it might be empty
-            const salt = bcrypt.genSaltSync(10); // Use sync for setter
+        set: (plainPassword: string) => { // <--- ADD THIS SETTER
+            if (!plainPassword) return plainPassword;
+            const salt = bcrypt.genSaltSync(10);
             return bcrypt.hashSync(plainPassword, salt);
         },
     },
@@ -44,16 +43,11 @@ import { IUserDocument } from '../types/declarations';
     },
     profilePictureUrl: {
         type: String,
-        // Removed `default: 'default_profile.png'` here if you're not enforcing a default in the DB directly
-        // The `profilePictureUrl?: string;` in the interface already implies it can be undefined or null.
-        // If you want a default if the user doesn't provide one, keep the default in the schema.
-        // Let's keep the default for now, as it's common to have a fallback image.
         default: 'default_profile.png',
-        // No 'required: true' here, reflecting it being optional in the interface
     },
     bio: {
         type: String,
-        required: [true, 'Bio is required'], // CHANGED: Now mandatory
+        required: [true, 'Bio is required'],
         maxLength: [250, 'Bio cannot exceed 250 characters'],
     },
     registrationDate: {
@@ -79,7 +73,7 @@ import { IUserDocument } from '../types/declarations';
                 ...userObject, // Spreads all properties from 'ret' except 'passwordHash' and '_id'
                 _id: _id.toString(), // Convert ObjectId to string
             };
-            
+
             return publicUser;
         }
     }
