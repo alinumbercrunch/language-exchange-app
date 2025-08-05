@@ -1,4 +1,3 @@
-// src/app/layout.tsx
 import './globals.css'; // ✅ Make sure Tailwind's directives live here
 
 export const metadata = {

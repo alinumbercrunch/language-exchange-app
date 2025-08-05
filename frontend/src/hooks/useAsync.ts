@@ -1,5 +1,3 @@
-// frontend/src/hooks/useAsync.ts
-
 import { useState, useEffect } from 'react';
 import AppError from '../utils/appError';
 

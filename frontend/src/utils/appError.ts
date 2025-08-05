@@ -1,5 +1,3 @@
-// frontend/src/utils/appError.ts
-
 /**
  * Custom error class to handle application-specific errors, mirroring the backend's AppError.
  * This helps in standardizing error handling across the full stack.
