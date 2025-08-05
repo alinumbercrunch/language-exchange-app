@@ -1,5 +1,3 @@
-// src/app/page.tsx
-
 'use client'; // This directive makes this a Client Component
 
 import { useCallback } from 'react';
