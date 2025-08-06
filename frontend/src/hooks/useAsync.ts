@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import AppError from '../utils/appError';
+import AppError from '../../../shared/appError';
 
 /**
  * A custom hook to handle asynchronous operations and manage loading, data, and error states.
@@ -27,9 +27,9 @@ export function useAsync<T>(asyncFunction: () => Promise<T>) {
           if (err instanceof AppError) {
             setError(err);
           } else if (err instanceof Error) {
-            setError(new AppError(err.message));
+            setError(new AppError(err.message, 500));
           } else {
-            setError(new AppError('An unknown error occurred.'));
+            setError(new AppError('An unknown error occurred.', 500));
           }
         }
       } finally {
