@@ -3,7 +3,7 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken'; // JWT for authentication
 import User from '../models/User';
 import { AuthenticatedRequest } from '../types/declarations';
-import AppError from '../utils/appError'
+import AppError from '../../../shared/appError';
 
 // Helper function to generate a JWT
 const generateToken = (id: string) => {
@@ -107,7 +107,7 @@ export const getUserProfile = asyncHandler<AuthenticatedRequest>(async (req, res
         // This 'else' block should ideally not be hit if Passport.js middleware is working correctly
         // because Passport.js would have already sent a 401 if authentication failed.
         // It's here as a fallback/type safety.
-        throw new AppError('Not authorized, user data not found after authentication.', 401);
+        throw new Error('Not authorized, user data not found after authentication.');
     }
 });
 
@@ -120,7 +120,7 @@ export const deleteUserProfile = asyncHandler(async (req: AuthenticatedRequest, 
         throw new AppError('Authentication error, user not found.', 401);
     }
 
-    const user = await User.findByIdAndDelete(req.user!._id);
+    const user = await User.findByIdAndDelete(req.user._id);
 
     if (!user) {
         // This case should ideally not be reached on a protected route,
@@ -139,7 +139,11 @@ export const deleteUserProfile = asyncHandler(async (req: AuthenticatedRequest, 
  * @access  Private
  */
 export const updateUserProfile = asyncHandler<AuthenticatedRequest>(async (req, res) => {
-    const user = await User.findById(req.user!.id);
+    if (!req.user) {
+        throw new AppError('Authentication error, user not found.', 401);
+    }
+
+    const user = await User.findById(req.user.id);
 
     if (!user) {
         throw new AppError('User not found.', 404);

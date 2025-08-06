@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react';
 import { useAsync } from '../hooks/useAsync';
-import AppError from '../utils/appError';
+import AppError from '../../../shared/appError';
 
 // This function contains the actual API call logic.
 // We define it outside the component so it can be memoized with useCallback.
