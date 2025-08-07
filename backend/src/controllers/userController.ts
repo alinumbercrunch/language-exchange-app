@@ -2,8 +2,10 @@ import { Request, Response } from 'express';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken'; // JWT for authentication
 import User from '../models/User';
-import { AuthenticatedRequest } from '../types/declarations';
+import { AuthenticatedRequest, IUserRegistrationRequest } from '../types/declarations';
 import AppError from '../../../shared/appError';
+import asyncHandler from '../utils/asyncHandler';
+import { IUser } from '../../../shared/user.interface';
 
 // Helper function to generate a JWT
 const generateToken = (id: string) => {
@@ -17,14 +19,17 @@ const generateToken = (id: string) => {
 // @desc    Register a new user
 // @route   POST /api/users/register
 // @access  Public
-import asyncHandler from '../utils/asyncHandler';
-
-// @desc    Register a new user
-// @route   POST /api/users/register
-// @access  Public
-export const registerUser = asyncHandler(async (req: Request, res: Response) => {
+export const registerUser = asyncHandler(async (req: Request<{}, { user: IUser }, IUserRegistrationRequest>, res: Response) => {
     // 1. Extract data from request body
-    const { username, email, password, firstName, familyName, bio } = req.body;
+    const { username, email, password, firstName, familyName, bio, profileOptions } = req.body;
+    const {
+    nativeLanguage,
+    practicingLanguage,
+    country,
+    city,
+    gender,
+    age
+} = profileOptions; // <-- We pull the nested fields from this object
 
     // 2. Check if user already exists
     const userExists = await User.findOne({ email }); // Check by email
@@ -37,17 +42,25 @@ export const registerUser = asyncHandler(async (req: Request, res: Response) => 
         throw new AppError('Username is already taken.', 400);
     }
 
-    // 3. Create new user instance (using the User model)
-    const newUser = new User({
-        username,
-        email,
-        passwordHash: password, 
-        firstName,
-        familyName,
-        bio: bio || '', // Optional field, default to empty string if not provided
-        isActive: true, // Default to true upon registration
-        registrationDate: new Date(),
-    });
+// 3. Create new user instance (using the User model)
+const newUser = new User({
+    username,
+    email,
+    passwordHash: password, 
+    firstName,
+    familyName,
+    bio: bio || '',
+    isActive: true,
+    registrationDate: new Date(),
+    profileOptions: {
+        nativeLanguage,
+        practicingLanguage,
+        country,
+        city,
+        gender,
+        age,
+    },
+});
 
     // 4. Save the user to the database
     const savedUser = await newUser.save();

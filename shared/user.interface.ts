@@ -12,6 +12,18 @@ export interface IUser {
     lastLoginDate?: Date;
     createdAt: Date;
     updatedAt: Date;
+
+    profileOptions: {
+    nativeLanguage: string;
+    practicingLanguage: {
+        language: string;
+        proficiency: 'Beginner' | 'Intermediate' | 'Advanced';
+    };
+    country: string;
+    city: string;
+    gender: 'Male' | 'Female' | 'Non-binary' | 'Prefer not to say';
+    age: number;
+    };
 }
 
 export interface IUserRegisterRequest {
