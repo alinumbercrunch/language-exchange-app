@@ -2,6 +2,11 @@ import mongoose, { HydratedDocument, Schema } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { IUser } from '../../../shared/user.interface';
 import { IUserDocument } from '../types/declarations';
+import { getNames as getCountryNames } from 'country-list';
+import iso6391 from 'iso-639-1';
+
+const supportedCountries = getCountryNames();
+const supportedLanguages = iso6391.getAllNames();
 
 /**
  * Mongoose schema for the User model.
@@ -60,10 +65,50 @@ const UserSchema = new Schema<IUserDocument>({
         type: Boolean,
         default: true,
     },
+    profileOptions: {
+        nativeLanguage: {
+            type: String,
+            required: [true, 'Native language is required'],
+            enum: supportedLanguages, // Only allows values from the language list
+        },
+        practicingLanguage: {
+            language: {
+                type: String,
+                required: [true, 'Practicing language is required'],
+                enum: supportedLanguages, // Only allows values from the language list
+            },
+            proficiency: {
+                type: String,
+                enum: ['Beginner', 'Intermediate', 'Advanced'], // A predefined list for proficiency
+                required: [true, 'Proficiency level is required'],
+            }
+        },
+        country: {
+            type: String,
+            required: [true, 'Country is required'],
+            enum: supportedCountries, // Only allows values from the country list
+        },
+        city: {
+            type: String,
+            required: [true, 'City is required'],
+            trim: true,
+        },
+        gender: {
+            type: String,
+            required: [true, 'Gender is required'],
+            enum: ['Male', 'Female', 'Non-binary', 'Prefer not to say'],
+        },
+        age: {
+            type: Number,
+            required: [true, 'Age is required'],
+            min: [13, 'Age must be at least 13'], // Example minimum age
+            max: [120, 'Age cannot exceed 120'],
+        }
+    },
 }, {
     timestamps: true,
     toJSON: {
-        transform: function (doc: IUserDocument, ret: mongoose.FlatRecord<IUserDocument>): IUser {
+        transform: function ( ret: mongoose.FlatRecord<IUserDocument>): IUser {
             // 1. Destructure and omit sensitive fields
             const { passwordHash, _id, ...userObject } = ret;
 
