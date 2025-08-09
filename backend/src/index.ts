@@ -4,8 +4,8 @@ import express from 'express';
 import dotenv from 'dotenv';
 import connectDB from './config/db';
 import userRoutes from './routes/userRoutes';
-import cors from 'cors'; 
-import passport from 'passport'; // Import the passport library
+import cors from 'cors';
+import passport from 'passport';
 import configurePassport from './config/passport';
 
 dotenv.config();
@@ -13,16 +13,18 @@ connectDB();
 
 const app = express();
 
-// --- Add this line to use the CORS middleware ---
 app.use(cors());
-
-// Middleware to parse JSON bodies
 app.use(express.json());
 
-app.use(passport.initialize());
-// Configure Passport with your JWT strategy (pass the passport instance)
-configurePassport(passport);
+// --- Place the logging middleware here ---
+app.use((req, res, next) => {
+    console.log(`[REQUEST] ${req.method} ${req.originalUrl}`);
+    console.log('Body:', req.body);
+    next();
+});
 
+app.use(passport.initialize());
+configurePassport(passport);
 
 app.get('/', (req, res) => {
     res.send('API is running...');
