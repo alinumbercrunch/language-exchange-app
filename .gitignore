@@ -1,5 +1,22 @@
 node_modules/
 dist/
+build/
 .env
 .DS_Store
 .next/
+
+# TypeScript compiled JavaScript files
+*.js
+!*.config.js
+!jest.config.js
+!next.config.js
+
+# TypeScript build info
+*.tsbuildinfo
+
+# IDE files
+.vscode/
+.idea/
+
+# Logs
+*.log
