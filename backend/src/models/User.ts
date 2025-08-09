@@ -1,4 +1,6 @@
-import mongoose, { HydratedDocument, Schema } from 'mongoose';
+// backend/src/models/User.ts
+
+import mongoose, { Schema } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { IUser } from '../../../shared/user.interface';
 import { IUserDocument } from '../types/declarations';
@@ -29,11 +31,7 @@ const UserSchema = new Schema<IUserDocument>({
         type: String,
         required: [true, 'Password is required'],
         select: false,
-        set: (plainPassword: string) => { // <--- ADD THIS SETTER
-            if (!plainPassword) return plainPassword;
-            const salt = bcrypt.genSaltSync(10);
-            return bcrypt.hashSync(plainPassword, salt);
-        },
+        // The password is now hashed via the pre-save hook below, so no setter is needed here.
     },
     firstName: {
         type: String,
@@ -51,7 +49,6 @@ const UserSchema = new Schema<IUserDocument>({
     },
     bio: {
         type: String,
-        required: [true, 'Bio is required'],
         maxLength: [250, 'Bio cannot exceed 250 characters'],
     },
     registrationDate: {
@@ -69,24 +66,24 @@ const UserSchema = new Schema<IUserDocument>({
         nativeLanguage: {
             type: String,
             required: [true, 'Native language is required'],
-            enum: supportedLanguages, // Only allows values from the language list
+            enum: supportedLanguages,
         },
         practicingLanguage: {
             language: {
                 type: String,
                 required: [true, 'Practicing language is required'],
-                enum: supportedLanguages, // Only allows values from the language list
+                enum: supportedLanguages,
             },
             proficiency: {
                 type: String,
-                enum: ['Beginner', 'Intermediate', 'Advanced'], // A predefined list for proficiency
+                enum: ['Beginner', 'Intermediate', 'Advanced'],
                 required: [true, 'Proficiency level is required'],
             }
         },
         country: {
             type: String,
             required: [true, 'Country is required'],
-            enum: supportedCountries, // Only allows values from the country list
+            enum: supportedCountries,
         },
         city: {
             type: String,
@@ -101,44 +98,33 @@ const UserSchema = new Schema<IUserDocument>({
         age: {
             type: Number,
             required: [true, 'Age is required'],
-            min: [13, 'Age must be at least 13'], // Example minimum age
+            min: [13, 'Age must be at least 13'],
             max: [120, 'Age cannot exceed 120'],
         }
     },
 }, {
     timestamps: true,
     toJSON: {
-        transform: function ( ret: mongoose.FlatRecord<IUserDocument>): IUser {
-            // 1. Destructure and omit sensitive fields
+        transform: function (ret: mongoose.FlatRecord<IUserDocument>): IUser {
             const { passwordHash, _id, ...userObject } = ret;
-
-            // 2. Reconstruct the object for the public API
             const publicUser: IUser = {
-                ...userObject, // Spreads all properties from 'ret' except 'passwordHash' and '_id'
-                _id: _id.toString(), // Convert ObjectId to string
+                ...userObject,
+                _id: _id.toString(),
             };
-
             return publicUser;
         }
     }
 });
 
-// Corrected and simpler pre-save hook
+// A standard, robust pre-save hook for password hashing
 UserSchema.pre('save', async function (next) {
-    const user = this as IUserDocument & { _plainPassword?: string };
-
-    // Only hash the password if a plain password was provided (via the virtual setter)
-    // and the document is new, or if the plain password was modified.
-    // We check `user._plainPassword` because that's what the virtual setter populates.
-    if (!user._plainPassword) {
-        return next(); // No plain password provided, nothing to hash.
+    if (!this.isModified('passwordHash')) {
+        next();
+        return;
     }
 
-    // If a plain password exists, hash it
     const salt = await bcrypt.genSalt(10);
-    user.passwordHash = await bcrypt.hash(user._plainPassword, salt);
-    user._plainPassword = undefined; // Clear the temporary plain password after hashing
-
+    this.passwordHash = await bcrypt.hash(this.passwordHash, salt);
     next();
 });
 
