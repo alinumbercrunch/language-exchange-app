@@ -1,17 +1,30 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.authenticatedAsyncHandler = void 0;
+exports.validatedAuthenticatedAsyncHandler = exports.validatedAsyncHandler = void 0;
+const express_validator_1 = require("express-validator");
 const responseHelpers_1 = require("./responseHelpers");
 /**
- * Enhanced async handler with improved error handling and logging
- * Wraps async functions to automatically catch and handle errors
+ * Validation async handler that automatically checks for validation errors
+ * and returns appropriate error responses before executing the main handler
  */
-const asyncHandler = (fn) => (req, res, next) => {
+const validatedAsyncHandler = (fn) => (req, res, next) => {
+    // Check for validation errors
+    const errors = (0, express_validator_1.validationResult)(req);
+    if (!errors.isEmpty()) {
+        const errorMessages = errors.array().map(error => ({
+            field: 'path' in error ? error.path : 'unknown',
+            message: error.msg,
+            value: 'value' in error ? error.value : undefined
+        }));
+        return responseHelpers_1.ResponseHelper.validationError(res, errorMessages);
+    }
+    // If no validation errors, proceed with the original handler
     Promise.resolve(fn(req, res, next)).catch((error) => {
-        // Log the error for debugging purposes
-        console.error('AsyncHandler Error:', {
+        // Enhanced error logging for validation handlers
+        console.error('ValidatedAsyncHandler Error:', {
             path: req.path,
             method: req.method,
+            body: req.body,
             error: error.message,
             stack: error.stack
         });
@@ -43,15 +56,16 @@ const asyncHandler = (fn) => (req, res, next) => {
         return responseHelpers_1.ResponseHelper.error(res, 'Internal server error', 500);
     });
 };
+exports.validatedAsyncHandler = validatedAsyncHandler;
 /**
- * Specialized async handler for authenticated routes
- * Automatically checks for user authentication
+ * Combined validation and authentication handler
  */
-const authenticatedAsyncHandler = (fn) => (req, res, next) => {
+const validatedAuthenticatedAsyncHandler = (fn) => (req, res, next) => {
+    // Check authentication first
     if (!req.user) {
         return responseHelpers_1.ResponseHelper.error(res, 'Authentication required', 401);
     }
-    return asyncHandler(fn)(req, res, next);
+    // Then check validation
+    return (0, exports.validatedAsyncHandler)(fn)(req, res, next);
 };
-exports.authenticatedAsyncHandler = authenticatedAsyncHandler;
-exports.default = asyncHandler;
+exports.validatedAuthenticatedAsyncHandler = validatedAuthenticatedAsyncHandler;
