@@ -26,12 +26,24 @@ export interface IUser {
     };
 }
 
-export interface IUserRegisterRequest {
+export interface IUserRegistrationRequest {
     username: string;
     email: string;
     password: string;
     firstName: string;
     familyName: string;
+    bio: string;
+    profileOptions: {
+        nativeLanguage: string;
+        practicingLanguage: {
+            language: string;
+            proficiency: 'Beginner' | 'Intermediate' | 'Advanced';
+        };
+        country: string;
+        city: string;
+        gender: 'Male' | 'Female' | 'Non-binary' | 'Prefer not to say';
+        age: number;
+    };
 }
 
 export interface IUserLoginRequest {
