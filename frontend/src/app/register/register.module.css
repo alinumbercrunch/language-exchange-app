@@ -1,0 +1,111 @@
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 40px 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2rem;
+    color: #333;
+}
+
+.form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form h3 {
+    grid-column: span 2;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+    color: #555;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 5px;
+}
+
+.form div {
+    display: flex;
+    flex-direction: column;
+}
+
+.form label {
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #666;
+}
+
+.form input,
+.form select,
+.form textarea {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    background-color: #fff;
+    color: #333;
+    transition: border-color 0.2s;
+}
+
+.form input:focus,
+.form select:focus,
+.form textarea:focus {
+    border-color: #0070f3;
+    outline: none;
+}
+
+.form textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.fullWidth {
+    grid-column: span 2;
+}
+
+.submitButton {
+    grid-column: span 2;
+    padding: 15px;
+    background-color: #0070f3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 20px;
+}
+
+.submitButton:hover {
+    background-color: #005bb5;
+}
+
+.submitButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.errorMessage {
+    background-color: #fee;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.successMessage {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}

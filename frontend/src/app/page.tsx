@@ -2,13 +2,14 @@
 
 import { useCallback } from 'react';
 import { useAsync } from '../hooks/useAsync';
+import { API_CONFIG } from '../constants/apiConstants';
 import AppError from '../../../shared/appError';
 
 // This function contains the actual API call logic.
 // We define it outside the component so it can be memoized with useCallback.
 async function testBackendConnection(): Promise<string> {
-  // IMPORTANT: Your backend server must be running on http://localhost:5000
-  const response = await fetch('http://localhost:5000/');
+  // IMPORTANT: Your backend server must be running
+  const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.HEALTH}`);
 
   if (response.ok) {
     const text = await response.text();
