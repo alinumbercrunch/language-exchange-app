@@ -1,76 +1,30 @@
 // backend/src/controllers/userController.ts
 
 import { Request, Response } from 'express';
-import * as bcrypt from 'bcrypt';
-import * as jwt from 'jsonwebtoken';
-import User from '../models/User';
+import { UserService } from '../services/userService';
+import { AuthService } from '../services/authService';
+import { ResponseHelper } from '../utils/responseHelpers';
 import { AuthenticatedRequest, IUserRegistrationRequest } from '../types/declarations';
-import AppError from '../../../shared/appError';
 import asyncHandler from '../utils/asyncHandler';
 import { IUser } from '../../../shared/user.interface';
 
-// Helper function to generate a JWT
-const generateToken = (id: string) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET!, {
-        expiresIn: '30d',
-    });
-};
-
 export const registerUser = asyncHandler(async (req: Request<{}, { user: IUser }, IUserRegistrationRequest>, res: Response) => {
-    // 1. Extract data from request body
-    const { username, email, password, firstName, familyName, bio, profileOptions } = req.body;
-    const {
-        nativeLanguage,
-        practicingLanguage,
-        country,
-        city,
-        gender,
-        age
-    } = profileOptions;
-    const { language, proficiency } = practicingLanguage;
+    const userData = req.body;
 
-    // 2. Check if user already exists
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-        throw new AppError('User with that email already exists.', 400);
-    }
-    const usernameExists = await User.findOne({ username });
-    if (usernameExists) {
-        throw new AppError('Username is already taken.', 400);
-    }
+    // Create user using service layer
+    const savedUser = await UserService.createUser(userData);
 
-    // 3. Create new user instance (password will be hashed by the pre-save hook)
-    const newUser = new User({
-        username,
-        email,
-        passwordHash: password,
-        firstName,
-        familyName,
-        bio: bio || '',
-        isActive: true,
-        registrationDate: new Date(),
-        profileOptions: {
-            nativeLanguage,
-            practicingLanguage: {
-                language,
-                proficiency
-            },
-            country,
-            city,
-            gender,
-            age,
-        },
-    });
+    // Generate authentication token
+    const token = AuthService.generateToken(savedUser._id.toString());
 
-    // 4. Save the user to the database. Errors here are caught by asyncHandler.
-    const savedUser = await newUser.save();
-
-    // 5. Send success response (excluding passwordHash using toJSON)
-    res.status(201).json({
-        message: 'User registered successfully!',
-        user: savedUser.toJSON(),
-        token: generateToken(savedUser._id.toString()),
-    });
+    // Send success response
+    return ResponseHelper.authSuccess(
+        res,
+        'User registered successfully!',
+        savedUser.toJSON(),
+        token,
+        201
+    );
 });
 
 // @desc    Login as a user
@@ -81,25 +35,16 @@ export const registerUser = asyncHandler(async (req: Request<{}, { user: IUser }
 export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
-    // 1. Find user by email
-    const user = await User.findOne({ email }).select('+passwordHash');
-    if (!user) {
-        throw new AppError('Invalid credentials.', 401);
-    }
+    // Authenticate user using service layer
+    const { user, token } = await UserService.authenticateUser(email, password);
 
-
-    // 2. Compare passwords
-    const isMatch = await bcrypt.compare(password, user.passwordHash);
-    if (!isMatch) {
-        throw new AppError('Invalid email or password.', 401);
-    }
-
-    // 3. Send success response (excluding passwordHash)
-    res.status(200).json({
-        message: 'Login successful!',
-        user: user.toJSON(),
-        token: generateToken(user._id.toString()),
-    });
+    // Send success response
+    return ResponseHelper.authSuccess(
+        res,
+        'Login successful!',
+        user,
+        token
+    );
 });
 
 
@@ -107,15 +52,17 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
 // @route   GET /api/users/profile
 // @access  Private (requires JWT token)
 export const getUserProfile = asyncHandler<AuthenticatedRequest>(async (req, res) => {
-    if (req.user) {
-        const user = req.user.toJSON();
-        res.status(200).json({
-            message: 'User profile fetched successfully!',
-            user: user
-        });
-    } else {
-        throw new Error('Not authorized, user data not found after authentication.');
+    if (!req.user) {
+        return ResponseHelper.error(res, 'Authentication error, user not found.', 401);
     }
+
+    const user = await UserService.getUserById(req.user.id);
+    
+    return ResponseHelper.success(
+        res, 
+        'User profile fetched successfully!', 
+        user.toJSON()
+    );
 });
 
 // @desc    Delete authenticated user's profile
@@ -123,18 +70,12 @@ export const getUserProfile = asyncHandler<AuthenticatedRequest>(async (req, res
 // @access  Private
 export const deleteUserProfile = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     if (!req.user) {
-        throw new AppError('Authentication error, user not found.', 401);
+        return ResponseHelper.error(res, 'Authentication error, user not found.', 401);
     }
 
-    const user = await User.findByIdAndDelete(req.user._id);
+    await UserService.deleteUser(req.user._id);
 
-    if (!user) {
-        throw new AppError('User not found.', 404);
-    }
-
-    res.status(200).json({
-        message: 'User profile deleted successfully.'
-    });
+    return ResponseHelper.success(res, 'User profile deleted successfully.');
 });
 
 /**
@@ -144,28 +85,14 @@ export const deleteUserProfile = asyncHandler(async (req: AuthenticatedRequest, 
  */
 export const updateUserProfile = asyncHandler<AuthenticatedRequest>(async (req, res) => {
     if (!req.user) {
-        throw new AppError('Authentication error, user not found.', 401);
+        return ResponseHelper.error(res, 'Authentication error, user not found.', 401);
     }
 
-    const user = await User.findById(req.user.id);
+    const updatedUser = await UserService.updateUser(req.user.id, req.body);
 
-    if (!user) {
-        throw new AppError('User not found.', 404);
-    }
-
-    // Update user fields if they are present in the request body
-    user.username = req.body.username || user.username;
-    user.email = req.body.email || user.email;
-    user.firstName = req.body.firstName || user.firstName;
-    user.familyName = req.body.familyName || user.familyName;
-    user.bio = req.body.bio || user.bio;
-    
-    // Save the updated user document
-    const updatedUser = await user.save();
-
-    // Respond with the updated user data
-    res.status(200).json({
-        message: 'User profile updated successfully!',
-        user: updatedUser.toJSON()
-    });
+    return ResponseHelper.success(
+        res,
+        'User profile updated successfully!',
+        updatedUser.toJSON()
+    );
 });
