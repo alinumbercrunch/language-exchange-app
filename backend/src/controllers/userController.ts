@@ -5,7 +5,7 @@ import { UserService } from '../services/userService';
 import { AuthService } from '../services/authService';
 import { ResponseHelper } from '../utils/responseHelpers';
 import { AuthenticatedRequest, IUserRegistrationRequest } from '../types/declarations';
-import asyncHandler from '../utils/asyncHandler';
+import asyncHandler, { authenticatedAsyncHandler } from '../utils/asyncHandler';
 import { IUser } from '../../../shared/user.interface';
 
 export const registerUser = asyncHandler(async (req: Request<{}, { user: IUser }, IUserRegistrationRequest>, res: Response) => {
@@ -51,12 +51,8 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
 // @desc    Get authenticated user profile
 // @route   GET /api/users/profile
 // @access  Private (requires JWT token)
-export const getUserProfile = asyncHandler<AuthenticatedRequest>(async (req, res) => {
-    if (!req.user) {
-        return ResponseHelper.error(res, 'Authentication error, user not found.', 401);
-    }
-
-    const user = await UserService.getUserById(req.user.id);
+export const getUserProfile = authenticatedAsyncHandler<AuthenticatedRequest>(async (req, res) => {
+    const user = await UserService.getUserById(req.user!.id);
     
     return ResponseHelper.success(
         res, 
@@ -68,12 +64,8 @@ export const getUserProfile = asyncHandler<AuthenticatedRequest>(async (req, res
 // @desc    Delete authenticated user's profile
 // @route   DELETE /api/users/profile
 // @access  Private
-export const deleteUserProfile = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
-    if (!req.user) {
-        return ResponseHelper.error(res, 'Authentication error, user not found.', 401);
-    }
-
-    await UserService.deleteUser(req.user._id);
+export const deleteUserProfile = authenticatedAsyncHandler<AuthenticatedRequest>(async (req, res) => {
+    await UserService.deleteUser(req.user!._id);
 
     return ResponseHelper.success(res, 'User profile deleted successfully.');
 });
@@ -83,12 +75,8 @@ export const deleteUserProfile = asyncHandler(async (req: AuthenticatedRequest, 
  * @route   PUT /api/users/profile
  * @access  Private
  */
-export const updateUserProfile = asyncHandler<AuthenticatedRequest>(async (req, res) => {
-    if (!req.user) {
-        return ResponseHelper.error(res, 'Authentication error, user not found.', 401);
-    }
-
-    const updatedUser = await UserService.updateUser(req.user.id, req.body);
+export const updateUserProfile = authenticatedAsyncHandler<AuthenticatedRequest>(async (req, res) => {
+    const updatedUser = await UserService.updateUser(req.user!.id, req.body);
 
     return ResponseHelper.success(
         res,
