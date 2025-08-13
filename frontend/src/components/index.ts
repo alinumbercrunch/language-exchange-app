@@ -3,9 +3,6 @@
  * Central barrel export for all reusable components
  */
 
-/** UI Components */
-export * from './ui';
-
 /** Layout Components */
 export * from './layout';
 
