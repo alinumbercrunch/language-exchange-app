@@ -1,15 +1,16 @@
 'use client'; // This directive makes this a Client Component
 
 import { useCallback } from 'react';
-import { useAsync } from '../hooks/useAsync';
-import { API_CONFIG } from '../constants/apiConstants';
+
 import AppError from '../../../shared/appError';
+import { API_CONFIG } from '../constants/apiConstants';
+import { useAsync } from '../hooks/useAsync';
 
 // This function contains the actual API call logic.
 // We define it outside the component so it can be memoized with useCallback.
 async function testBackendConnection(): Promise<string> {
   // IMPORTANT: Your backend server must be running
-  const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.HEALTH}`);
+  const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.TEST}`);
 
   if (response.ok) {
     const text = await response.text();
