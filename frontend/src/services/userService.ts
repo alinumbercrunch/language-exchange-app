@@ -1,7 +1,8 @@
 
-import { IUser, IUserRegistrationRequest } from '../../../shared/user.interface';
 import AppError from '../../../shared/appError';
 import { API_CONFIG } from '../constants/apiConstants';
+
+import type { IUser, IUserRegistrationRequest } from '../../../shared/user.interface';
 
 // Define a type for the validation errors returned by express-validator
 interface ValidationError {
