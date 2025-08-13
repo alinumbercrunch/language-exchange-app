@@ -1,16 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import { ResponseHelper } from './responseHelpers';
-import { AsyncRequestHandler } from '../types/declarations';
+import type { AsyncRequestHandler, AuthenticatedRequest } from '../types/declarations';
 
 /**
- * Validation async handler that automatically checks for validation errors
- * and returns appropriate error responses before executing the main handler
+ * Basic async handler for error handling
  */
 export const validatedAsyncHandler = <T = Request>(fn: AsyncRequestHandler<T>) =>
     (req: T, res: Response, next: NextFunction) => {
-        // Check for validation errors
-        const errors = validationResult(req as any);
+        // Check for validation errors first
+        const errors = validationResult(req as Request);
         
         if (!errors.isEmpty()) {
             const errorMessages = errors.array().map(error => ({
@@ -22,18 +21,14 @@ export const validatedAsyncHandler = <T = Request>(fn: AsyncRequestHandler<T>) =
             return ResponseHelper.validationError(res, errorMessages);
         }
 
-        // If no validation errors, proceed with the original handler
+        // Execute the handler
         Promise.resolve(fn(req, res, next)).catch((error) => {
-            // Enhanced error logging for validation handlers
-            console.error('ValidatedAsyncHandler Error:', {
-                path: (req as any).path,
-                method: (req as any).method,
-                body: (req as any).body,
+            console.error('AsyncHandler Error:', {
+                path: (req as Request).path,
+                method: (req as Request).method,
                 error: error.message,
-                stack: error.stack
             });
 
-            // If headers are already sent, delegate to Express error handler
             if (res.headersSent) {
                 return next(error);
             }
@@ -43,14 +38,9 @@ export const validatedAsyncHandler = <T = Request>(fn: AsyncRequestHandler<T>) =
                 return ResponseHelper.error(res, error.message, error.statusCode);
             }
 
-            // Handle validation errors
-            if (error.name === 'ValidationError') {
-                return ResponseHelper.error(res, 'Validation error occurred', 400);
-            }
-
             // Handle MongoDB duplicate key errors
             if (error.code === 11000) {
-                const field = Object.keys(error.keyValue)[0];
+                const field = Object.keys(error.keyValue || {})[0];
                 return ResponseHelper.error(res, `${field} already exists`, 400);
             }
 
@@ -63,21 +53,21 @@ export const validatedAsyncHandler = <T = Request>(fn: AsyncRequestHandler<T>) =
                 return ResponseHelper.error(res, 'Token expired', 401);
             }
 
-            // Default to generic server error
+            // Default server error
             return ResponseHelper.error(res, 'Internal server error', 500);
         });
     };
 
 /**
- * Combined validation and authentication handler
+ * Authenticated handler that checks for user authentication
  */
-export const validatedAuthenticatedAsyncHandler = <T extends { user?: any }>(fn: AsyncRequestHandler<T>) =>
+export const authenticatedAsyncHandler = <T extends AuthenticatedRequest>(fn: AsyncRequestHandler<T>) =>
     (req: T, res: Response, next: NextFunction) => {
-        // Check authentication first
+        // Check authentication
         if (!req.user) {
             return ResponseHelper.error(res, 'Authentication required', 401);
         }
 
-        // Then check validation
+        // Use regular handler
         return validatedAsyncHandler(fn)(req, res, next);
     };

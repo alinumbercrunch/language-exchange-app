@@ -1,20 +1,49 @@
+/**
+ * User Validation Middleware - Express-validator rules for user operations
+ * Provides validation chains for registration, login, and profile updates
+ */
+
 import { body, validationResult } from 'express-validator';
 import { Request, Response, NextFunction } from 'express';
+import { VALIDATION_RULES, PROFICIENCY_LEVELS, GENDER_OPTIONS, SUPPORTED_LANGUAGES } from '../constants/validationConstants';
 
+/**
+ * Validation chain for user registration.
+ * Validates username, email, password, names, bio, and profile options.
+ */
 export const validateRegistration = [
-    body('username').notEmpty().withMessage('Username is required'),
+    body('username')
+        .isLength({ min: VALIDATION_RULES.USERNAME.MIN_LENGTH, max: VALIDATION_RULES.USERNAME.MAX_LENGTH })
+        .withMessage(`Username must be between ${VALIDATION_RULES.USERNAME.MIN_LENGTH} and ${VALIDATION_RULES.USERNAME.MAX_LENGTH} characters`)
+        .matches(VALIDATION_RULES.USERNAME.PATTERN)
+        .withMessage('Username can only contain letters, numbers, and underscores'),
     body('email').isEmail().withMessage('Please include a valid email'),
-    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+    body('password')
+        .isLength({ min: VALIDATION_RULES.PASSWORD.MIN_LENGTH, max: VALIDATION_RULES.PASSWORD.MAX_LENGTH })
+        .withMessage(`Password must be between ${VALIDATION_RULES.PASSWORD.MIN_LENGTH} and ${VALIDATION_RULES.PASSWORD.MAX_LENGTH} characters`),
     body('firstName').notEmpty().withMessage('First name is required'),
     body('familyName').notEmpty().withMessage('Family name is required'),
-    body('bio').isString().withMessage('Bio must be a string'),
-    body('profileOptions.nativeLanguage').notEmpty().withMessage('Native language is required'),
-    body('profileOptions.practicingLanguage.language').notEmpty().withMessage('Practicing language is required'),
-    body('profileOptions.practicingLanguage.proficiency').notEmpty().withMessage('Proficiency is required'),
+    body('bio')
+        .optional()
+        .isLength({ max: VALIDATION_RULES.BIO.MAX_LENGTH })
+        .withMessage(`Bio cannot exceed ${VALIDATION_RULES.BIO.MAX_LENGTH} characters`),
+    body('profileOptions.nativeLanguage')
+        .isIn(SUPPORTED_LANGUAGES)
+        .withMessage('Please select a valid native language'),
+    body('profileOptions.practicingLanguage.language')
+        .isIn(SUPPORTED_LANGUAGES)
+        .withMessage('Please select a valid language to practice'),
+    body('profileOptions.practicingLanguage.proficiency')
+        .isIn(PROFICIENCY_LEVELS)
+        .withMessage('Please select a valid proficiency level'),
     body('profileOptions.country').notEmpty().withMessage('Country is required'),
     body('profileOptions.city').notEmpty().withMessage('City is required'),
-    body('profileOptions.gender').notEmpty().withMessage('Gender is required'),
-    body('profileOptions.age').isNumeric().withMessage('Age must be a number'),
+    body('profileOptions.gender')
+        .isIn(GENDER_OPTIONS)
+        .withMessage('Please select a valid gender option'),
+    body('profileOptions.age')
+        .isInt({ min: VALIDATION_RULES.AGE.MIN, max: VALIDATION_RULES.AGE.MAX })
+        .withMessage(`Age must be between ${VALIDATION_RULES.AGE.MIN} and ${VALIDATION_RULES.AGE.MAX}`),
     (req: Request, res: Response, next: NextFunction) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -38,6 +67,7 @@ export const validateLogin = [
 
 /**
  * Middleware to validate the request body for user profile updates.
+ * All fields are optional but must pass validation if provided.
  */
 export const validateUpdate = [
     // All fields are optional but must pass their validation if present

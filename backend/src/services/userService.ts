@@ -1,12 +1,25 @@
-// backend/src/services/userService.ts
+/**
+ * User Service - Business logic for user operations
+ * Handles user registration, authentication, and profile management
+ */
 
+import * as bcrypt from 'bcrypt';
 import User from '../models/User';
 import AppError from '../../../shared/appError';
-import { IUserRegistrationRequest, IUser } from '../../../shared/user.interface';
+import { IUserRegistrationRequest } from '../types/declarations';
+import { AuthService } from './authService';
 
+/**
+ * Service class for user-related operations including registration, authentication, and profile management.
+ */
 export class UserService {
     /**
-     * Check if user exists by email or username
+     * Check if user exists by email or username to prevent duplicates.
+     * 
+     * @param email - Email address to check
+     * @param username - Username to check
+     * @throws {AppError} When user already exists with given email or username
+     * @returns Promise that resolves when no conflicts are found
      */
     static async checkUserExists(email: string, username: string): Promise<void> {
         const existingUser = await User.findOne({
@@ -24,7 +37,11 @@ export class UserService {
     }
 
     /**
-     * Create new user with validation
+     * Create new user with validation and return user data with authentication token.
+     * 
+     * @param userData - User registration data including profile information
+     * @returns Promise resolving to object containing saved user and JWT token
+     * @throws {AppError} When user already exists or validation fails
      */
     static async createUser(userData: IUserRegistrationRequest): Promise<any> {
         // Check for existing users
@@ -43,31 +60,50 @@ export class UserService {
             profileOptions: userData.profileOptions,
         });
 
-        return await newUser.save();
+        const savedUser = await newUser.save();
+        
+        // Debug: Log what we're returning
+        console.log('UserService returning savedUser:', JSON.stringify(savedUser.toJSON(), null, 2));
+        
+        // Generate token
+        const token = AuthService.generateToken(savedUser._id.toString());
+        
+        return { user: savedUser, token };
     }
 
     /**
-     * Authenticate user credentials
+     * Authenticate user credentials and return user data with token.
+     * 
+     * @param email - User's email address
+     * @param password - User's plain text password
+     * @returns Promise resolving to object containing user and JWT token
+     * @throws {AppError} When credentials are invalid
      */
-    static async authenticateUser(email: string, password: string): Promise<any> {
+    static async authenticateUser(email: string, password: string): Promise<{ user: any; token: string }> {
         const user = await User.findOne({ email }).select('+passwordHash');
         
         if (!user) {
             throw new AppError('Invalid credentials.', 401);
         }
 
-        const bcrypt = require('bcrypt');
         const isMatch = await bcrypt.compare(password, user.passwordHash);
         
         if (!isMatch) {
             throw new AppError('Invalid email or password.', 401);
         }
 
-        return user;
+        // Generate token
+        const token = AuthService.generateToken(user._id.toString());
+
+        return { user, token };
     }
 
     /**
-     * Get user by ID (for protected routes)
+     * Get user by ID for protected routes and profile access.
+     * 
+     * @param userId - MongoDB ObjectId as string
+     * @returns Promise resolving to user document
+     * @throws {AppError} When user is not found
      */
     static async getUserById(userId: string): Promise<any> {
         const user = await User.findById(userId);

@@ -1,13 +1,15 @@
-// backend/src/constants/validationConstants.ts
+/**
+ * Validation Constants - Centralized validation rules and options
+ * Contains validation rules, error messages, and supported values for user data
+ */
 
-// Import shared constants from frontend to ensure consistency
-import { PROFICIENCY_OPTIONS, GENDER_OPTIONS } from '../../../frontend/src/constants/formConstants';
-
-// Validation rules for user fields
+/**
+ * Validation rules for user input fields with length and pattern constraints.
+ */
 export const VALIDATION_RULES = {
     USERNAME: {
         MIN_LENGTH: 3,
-        MAX_LENGTH: 20,
+        MAX_LENGTH: 30,
         PATTERN: /^[a-zA-Z0-9_]+$/, // Alphanumeric and underscore only
     },
     PASSWORD: {
@@ -26,18 +28,40 @@ export const VALIDATION_RULES = {
     },
 } as const;
 
-// Extract values for validation
-export const VALID_PROFICIENCY_LEVELS = PROFICIENCY_OPTIONS.map(opt => opt.value);
-export const VALID_GENDERS = GENDER_OPTIONS.map(opt => opt.value);
+/**
+ * Language proficiency levels for language learning (matching frontend options).
+ */
+export const PROFICIENCY_LEVELS = [
+    'Beginner',
+    'Elementary', 
+    'Intermediate',
+    'Upper Intermediate',
+    'Advanced',
+    'Native'
+] as const;
 
-// Supported languages (could be moved to shared constants later)
+/**
+ * Gender options for user profiles (matching frontend options).
+ */
+export const GENDER_OPTIONS = [
+    'Male',
+    'Female',
+    'Non-binary',
+    'Prefer not to say'
+] as const;
+
+/**
+ * Supported languages for native and practicing language selection.
+ */
 export const SUPPORTED_LANGUAGES = [
     'English', 'Spanish', 'French', 'German', 'Italian', 'Portuguese',
     'Russian', 'Chinese', 'Japanese', 'Korean', 'Arabic', 'Hindi',
     'Dutch', 'Swedish', 'Norwegian', 'Danish', 'Finnish', 'Polish'
 ] as const;
 
-// Supported countries (simplified list - could be expanded)
+/**
+ * Supported countries for user location selection.
+ */
 export const SUPPORTED_COUNTRIES = [
     'United States', 'Canada', 'United Kingdom', 'Germany', 'France',
     'Spain', 'Italy', 'Netherlands', 'Sweden', 'Norway', 'Denmark',
@@ -45,7 +69,9 @@ export const SUPPORTED_COUNTRIES = [
     'Australia', 'New Zealand', 'Brazil', 'Mexico', 'Argentina'
 ] as const;
 
-// Error messages
+/**
+ * Standardized validation error messages for consistent user feedback.
+ */
 export const VALIDATION_MESSAGES = {
     USERNAME: {
         REQUIRED: 'Username is required',
@@ -75,3 +101,9 @@ export const VALIDATION_MESSAGES = {
         AGE_RANGE: `Age must be between ${VALIDATION_RULES.AGE.MIN} and ${VALIDATION_RULES.AGE.MAX}`,
     }
 } as const;
+
+/**
+ * Exported validation arrays for use in middleware and validation functions.
+ */
+export const VALID_PROFICIENCY_LEVELS = PROFICIENCY_LEVELS;
+export const VALID_GENDERS = GENDER_OPTIONS;

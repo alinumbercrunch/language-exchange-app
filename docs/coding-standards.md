@@ -65,6 +65,128 @@ kebab-case for utility files
 - pages/api/users/[id].ts
 ```
 
+## Documentation Standards
+
+### TSDoc Comments
+
+All public functions, components, types, and service classes should include TSDoc comments:
+
+#### Frontend Components
+```typescript
+/**
+ * A reusable button component with multiple variants and sizes.
+ * 
+ * @param variant - Visual style variant (default: 'primary')
+ * @param size - Button size (default: 'md')  
+ * @param isLoading - Shows loading spinner when true (default: false)
+ * @param className - Additional CSS classes
+ * @param children - Button content
+ * @param disabled - Whether the button is disabled
+ * @returns A styled button element
+ */
+export function Button({ 
+    variant = 'primary', 
+    size = 'md', 
+    isLoading = false,
+    className = '',
+    children,
+    disabled,
+    ...props 
+}: ButtonProps) {
+  // Implementation
+}
+
+/**
+ * Props for the Button component.
+ */
+export interface ButtonProps {
+    /** Visual style variant of the button */
+    variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+    /** Size of the button */
+    size?: 'sm' | 'md' | 'lg';
+    /** Whether the button is in a loading state */
+    isLoading?: boolean;
+    /** Button content */
+    children: React.ReactNode;
+}
+```
+
+#### Backend Services
+```typescript
+/**
+ * Service class for user-related operations including registration, authentication, and profile management.
+ */
+export class UserService {
+    /**
+     * Create new user with validation and return user data with authentication token.
+     * 
+     * @param userData - User registration data including profile information
+     * @returns Promise resolving to object containing saved user and JWT token
+     * @throws {AppError} When user already exists or validation fails
+     */
+    static async createUser(userData: IUserRegistrationRequest): Promise<any> {
+        // Implementation
+    }
+}
+```
+
+#### Controllers
+```typescript
+/**
+ * Register a new user account.
+ * 
+ * @route POST /api/users/register
+ * @access Public
+ * @param req - Express Request with user registration data
+ * @param res - Express Response object
+ * @returns Success response with user data and JWT token
+ */
+export const registerUser = asyncHandler(async (req: Request, res: Response) => {
+    // Implementation
+});
+```
+ * @param className - Additional CSS classes
+ * @param children - Button content
+ * @param disabled - Whether the button is disabled
+ * @returns A styled button element
+ */
+export function Button({ 
+    variant = 'primary', 
+    size = 'md', 
+    isLoading = false,
+    className = '',
+    children,
+    disabled,
+    ...props 
+}: ButtonProps) {
+  // Implementation
+}
+
+/**
+ * Props for the Button component.
+ */
+export interface ButtonProps {
+    /** Visual style variant of the button */
+    variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+    /** Size of the button */
+    size?: 'sm' | 'md' | 'lg';
+    /** Whether the button is in a loading state */
+    isLoading?: boolean;
+    /** Button content */
+    children: React.ReactNode;
+}
+```
+
+### Documentation Guidelines
+
+- Use `/** */` block comments for all public APIs
+- Start with a brief description
+- Use `@param` for parameters with descriptions
+- Use `@returns` for return value descriptions
+- Use `@throws` for exceptions that might be thrown
+- Use inline `/** */` comments for interface properties
+- Keep descriptions concise but informative
+
 ## Casing Conventions
 
 ### Components & Classes

@@ -1,10 +1,18 @@
+/**
+ * Async Handler Utility - Express error handling wrapper
+ * Automatically catches and handles errors in async route handlers
+ */
+
 import { Request, Response, NextFunction } from 'express';
 import { AsyncRequestHandler } from '../types/declarations';
 import { ResponseHelper } from './responseHelpers';
 
 /**
- * Enhanced async handler with improved error handling and logging
- * Wraps async functions to automatically catch and handle errors
+ * Enhanced async handler with improved error handling and logging.
+ * Wraps async functions to automatically catch and handle errors without try-catch blocks.
+ * 
+ * @param fn - Async request handler function to wrap
+ * @returns Express middleware function that handles errors automatically
  */
 const asyncHandler = <T = Request>(fn: AsyncRequestHandler<T>) =>
     (req: T, res: Response, next: NextFunction) => {

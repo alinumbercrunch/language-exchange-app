@@ -1,18 +1,37 @@
-// backend/src/utils/responseHelpers.ts
+/**
+ * Response Helper utilities for consistent API responses
+ * Provides standardized success and error response formatting
+ */
 
 import { Response } from 'express';
 import { IUser } from '../../../shared/user.interface';
 
+/**
+ * Standard API response interface for consistent formatting.
+ */
 export interface ApiResponse<T = any> {
+    /** Whether the request was successful */
     success: boolean;
+    /** Human-readable message describing the result */
     message: string;
+    /** Optional data payload */
     data?: T;
+    /** Optional validation or other errors */
     errors?: any[];
 }
 
+/**
+ * Utility class for standardized API response formatting.
+ */
 export class ResponseHelper {
     /**
-     * Send success response with data
+     * Send success response with optional data payload.
+     * 
+     * @param res - Express Response object
+     * @param message - Success message to display
+     * @param data - Optional data to include in response
+     * @param statusCode - HTTP status code (default: 200)
+     * @returns Express Response with standardized success format
      */
     static success<T>(res: Response, message: string, data?: T, statusCode: number = 200): Response<ApiResponse<T>> {
         return res.status(statusCode).json({
@@ -23,7 +42,13 @@ export class ResponseHelper {
     }
 
     /**
-     * Send error response
+     * Send error response with optional error details.
+     * 
+     * @param res - Express Response object
+     * @param message - Error message to display
+     * @param statusCode - HTTP status code (default: 500)
+     * @param errors - Optional array of detailed errors
+     * @returns Express Response with standardized error format
      */
     static error(res: Response, message: string, statusCode: number = 500, errors?: any[]): Response<ApiResponse> {
         return res.status(statusCode).json({
@@ -34,14 +59,21 @@ export class ResponseHelper {
     }
 
     /**
-     * Send authentication success response (user + token)
+     * Send authentication success response with user data and token.
+     * 
+     * @param res - Express Response object
+     * @param message - Success message to display
+     * @param user - User document or object
+     * @param token - JWT authentication token
+     * @param statusCode - HTTP status code (default: 200)
+     * @returns Express Response with user and token data
      */
-    static authSuccess(res: Response, message: string, user: IUser, token: string, statusCode: number = 200): Response<ApiResponse> {
+    static authSuccess(res: Response, message: string, user: any, token: string, statusCode: number = 200): Response<ApiResponse> {
         return res.status(statusCode).json({
             success: true,
             message,
             data: {
-                user: user,
+                user: user.toJSON ? user.toJSON() : user,
                 token: token
             }
         });

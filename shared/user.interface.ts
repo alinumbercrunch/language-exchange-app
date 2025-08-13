@@ -17,7 +17,7 @@ export interface IUser {
     nativeLanguage: string;
     practicingLanguage: {
         language: string;
-        proficiency: 'Beginner' | 'Intermediate' | 'Advanced';
+        proficiency: 'Beginner' | 'Elementary' | 'Intermediate' | 'Upper Intermediate' | 'Advanced' | 'Native';
     };
     country: string;
     city: string;
@@ -37,7 +37,7 @@ export interface IUserRegistrationRequest {
         nativeLanguage: string;
         practicingLanguage: {
             language: string;
-            proficiency: 'Beginner' | 'Intermediate' | 'Advanced';
+            proficiency: 'Beginner' | 'Elementary' | 'Intermediate' | 'Upper Intermediate' | 'Advanced' | 'Native';
         };
         country: string;
         city: string;
