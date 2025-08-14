@@ -22,21 +22,29 @@
  */
 
 import { body, validationResult } from 'express-validator';
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 
-import { PROFICIENCY_LEVELS, GENDER_OPTIONS, SUPPORTED_LANGUAGES, SUPPORTED_COUNTRIES } from '../../../shared/user.interface';
+import {
+    PROFICIENCY_LEVELS,
+    GENDER_OPTIONS,
+    SUPPORTED_LANGUAGES,
+    SUPPORTED_COUNTRIES as _SUPPORTED_COUNTRIES,
+} from '../../../shared/user.interface';
 import { VALIDATION_RULES, VALIDATION_MESSAGES } from '../constants/validationConstants';
-import { ResponseHelper } from '../utils/responseHelpers';
 /**
  * Validation error handler middleware - consolidates error checking for all validation chains
  */
-const handleValidationErrors = (req: Request, res: Response, next: NextFunction): void | Response => {
+const handleValidationErrors = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): void | Response => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ 
+        return res.status(400).json({
             success: false,
             message: 'Validation failed',
-            errors: errors.array() 
+            errors: errors.array(),
         });
     }
     next();
@@ -48,14 +56,24 @@ const handleValidationErrors = (req: Request, res: Response, next: NextFunction)
  */
 export const validateRegistration = [
     body('username')
-        .isLength({ min: VALIDATION_RULES.USERNAME.MIN_LENGTH, max: VALIDATION_RULES.USERNAME.MAX_LENGTH })
-        .withMessage(`Username must be between ${VALIDATION_RULES.USERNAME.MIN_LENGTH} and ${VALIDATION_RULES.USERNAME.MAX_LENGTH} characters`)
+        .isLength({
+            min: VALIDATION_RULES.USERNAME.MIN_LENGTH,
+            max: VALIDATION_RULES.USERNAME.MAX_LENGTH,
+        })
+        .withMessage(
+            `Username must be between ${VALIDATION_RULES.USERNAME.MIN_LENGTH} and ${VALIDATION_RULES.USERNAME.MAX_LENGTH} characters`
+        )
         .matches(VALIDATION_RULES.USERNAME.PATTERN)
         .withMessage(VALIDATION_MESSAGES.USERNAME.PATTERN),
     body('email').isEmail().withMessage(VALIDATION_MESSAGES.EMAIL.INVALID),
     body('password')
-        .isLength({ min: VALIDATION_RULES.PASSWORD.MIN_LENGTH, max: VALIDATION_RULES.PASSWORD.MAX_LENGTH })
-        .withMessage(`Password must be between ${VALIDATION_RULES.PASSWORD.MIN_LENGTH} and ${VALIDATION_RULES.PASSWORD.MAX_LENGTH} characters`),
+        .isLength({
+            min: VALIDATION_RULES.PASSWORD.MIN_LENGTH,
+            max: VALIDATION_RULES.PASSWORD.MAX_LENGTH,
+        })
+        .withMessage(
+            `Password must be between ${VALIDATION_RULES.PASSWORD.MIN_LENGTH} and ${VALIDATION_RULES.PASSWORD.MAX_LENGTH} characters`
+        ),
     body('firstName').notEmpty().withMessage(VALIDATION_MESSAGES.PERSONAL.FIRST_NAME),
     body('familyName').notEmpty().withMessage(VALIDATION_MESSAGES.PERSONAL.FAMILY_NAME),
     body('bio')
@@ -78,7 +96,9 @@ export const validateRegistration = [
         .withMessage(VALIDATION_MESSAGES.PERSONAL.GENDER_INVALID),
     body('profileOptions.age')
         .isInt({ min: VALIDATION_RULES.AGE.MIN, max: VALIDATION_RULES.AGE.MAX })
-        .withMessage(`Age must be between ${VALIDATION_RULES.AGE.MIN} and ${VALIDATION_RULES.AGE.MAX}`),
+        .withMessage(
+            `Age must be between ${VALIDATION_RULES.AGE.MIN} and ${VALIDATION_RULES.AGE.MAX}`
+        ),
     handleValidationErrors,
 ];
 
@@ -99,12 +119,27 @@ export const validateUpdate = [
     body('firstName').optional().notEmpty().withMessage(VALIDATION_MESSAGES.PERSONAL.FIRST_NAME),
     body('familyName').optional().notEmpty().withMessage(VALIDATION_MESSAGES.PERSONAL.FAMILY_NAME),
     body('bio').optional().isString().withMessage('Bio must be a string'),
-    body('profileOptions.nativeLanguage').optional().notEmpty().withMessage(VALIDATION_MESSAGES.PROFILE.NATIVE_LANGUAGE),
-    body('profileOptions.practicingLanguage.language').optional().notEmpty().withMessage(VALIDATION_MESSAGES.PROFILE.PRACTICING_LANGUAGE),
-    body('profileOptions.practicingLanguage.proficiency').optional().notEmpty().withMessage(VALIDATION_MESSAGES.PROFILE.PROFICIENCY),
-    body('profileOptions.country').optional().notEmpty().withMessage(VALIDATION_MESSAGES.PROFILE.COUNTRY),
+    body('profileOptions.nativeLanguage')
+        .optional()
+        .notEmpty()
+        .withMessage(VALIDATION_MESSAGES.PROFILE.NATIVE_LANGUAGE),
+    body('profileOptions.practicingLanguage.language')
+        .optional()
+        .notEmpty()
+        .withMessage(VALIDATION_MESSAGES.PROFILE.PRACTICING_LANGUAGE),
+    body('profileOptions.practicingLanguage.proficiency')
+        .optional()
+        .notEmpty()
+        .withMessage(VALIDATION_MESSAGES.PROFILE.PROFICIENCY),
+    body('profileOptions.country')
+        .optional()
+        .notEmpty()
+        .withMessage(VALIDATION_MESSAGES.PROFILE.COUNTRY),
     body('profileOptions.city').optional().notEmpty().withMessage(VALIDATION_MESSAGES.PROFILE.CITY),
-    body('profileOptions.gender').optional().notEmpty().withMessage(VALIDATION_MESSAGES.PROFILE.GENDER),
+    body('profileOptions.gender')
+        .optional()
+        .notEmpty()
+        .withMessage(VALIDATION_MESSAGES.PROFILE.GENDER),
     body('profileOptions.age').optional().isNumeric().withMessage('Age must be a number'),
 
     handleValidationErrors,

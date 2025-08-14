@@ -3,7 +3,12 @@
  * Contains validation rules, error messages, and supported values for user data
  */
 
-import { PROFICIENCY_LEVELS, GENDER_OPTIONS, SUPPORTED_LANGUAGES, SUPPORTED_COUNTRIES } from '../../../shared/user.interface';
+import {
+    PROFICIENCY_LEVELS as _PROFICIENCY_LEVELS,
+    GENDER_OPTIONS as _GENDER_OPTIONS,
+    SUPPORTED_LANGUAGES as _SUPPORTED_LANGUAGES,
+    SUPPORTED_COUNTRIES as _SUPPORTED_COUNTRIES,
+} from '../../../shared/user.interface';
 import { SHARED_VALIDATION_RULES } from '../../../shared/validationRules';
 
 /**
@@ -51,7 +56,7 @@ export const VALIDATION_MESSAGES = {
         PROFICIENCY_INVALID: 'Please select a valid proficiency level',
         COUNTRY_INVALID: 'Please select a valid country',
         GENDER_INVALID: 'Please select a valid gender',
-    }
+    },
 } as const;
 
 /**
@@ -70,8 +75,9 @@ export const ERROR_MESSAGES = {
     },
     GENERAL: {
         REGISTRATION_ERROR: 'An error occurred during registration.',
-        SERVER_CONNECTION_FAILED: 'Failed to connect to the server. Please check if the backend is running on http://localhost:5000',
-    }
+        SERVER_CONNECTION_FAILED:
+            'Failed to connect to the server. Please check if the backend is running on http://localhost:5000',
+    },
 } as const;
 
 /**
@@ -85,5 +91,3 @@ export const HTTP_STATUS = {
     NOT_FOUND: 404,
     INTERNAL_SERVER_ERROR: 500,
 } as const;
-
-
