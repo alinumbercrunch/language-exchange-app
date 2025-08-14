@@ -4,34 +4,8 @@
  */
 
 import { Response } from 'express';
-import { IUser } from '../../../shared/user.interface';
+import { IUser, ValidationError, ApiResponse } from '../../../shared/user.interface';
 import { IUserDocument } from '../types/declarations';
-
-/**
- * Validation error structure for API responses.
- */
-export interface ValidationError {
-    /** Field that failed validation */
-    field?: string;
-    /** Error message */
-    message: string;
-    /** Field value that caused the error */
-    value?: unknown;
-}
-
-/**
- * Standard API response interface for consistent formatting.
- */
-export interface ApiResponse<T = unknown> {
-    /** Whether the request was successful */
-    success: boolean;
-    /** Human-readable message describing the result */
-    message: string;
-    /** Optional data payload */
-    data?: T;
-    /** Optional validation or other errors */
-    errors?: ValidationError[];
-}
 
 /**
  * Utility class for standardized API response formatting.

@@ -116,3 +116,25 @@ export interface IUserPasswordUpdateRequest {
     currentPassword: string;
     newPassword: string;
 }
+
+// API Response interfaces for consistent error handling
+export interface ValidationError {
+    type: string;
+    msg: string;
+    path: string;
+    location: string;
+}
+
+// Alternative validation error format for internal use
+export interface InternalValidationError {
+    field?: string;
+    message: string;
+    value?: unknown;
+}
+
+export interface ApiResponse<T = unknown> {
+    success: boolean;
+    message: string;
+    data?: T;
+    errors?: ValidationError[] | InternalValidationError[];
+}

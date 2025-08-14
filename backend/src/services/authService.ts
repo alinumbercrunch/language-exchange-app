@@ -5,6 +5,7 @@
 
 import * as jwt from 'jsonwebtoken';
 import AppError from '../../../shared/appError';
+import { ERROR_MESSAGES, HTTP_STATUS } from '../constants/validationConstants';
 
 /**
  * JWT payload interface for token verification.
@@ -31,7 +32,7 @@ export class AuthService {
      */
     static generateToken(userId: string): string {
         if (!process.env.JWT_SECRET) {
-            throw new AppError('JWT secret not configured', 500);
+            throw new AppError(ERROR_MESSAGES.AUTH.JWT_SECRET_NOT_CONFIGURED, HTTP_STATUS.INTERNAL_SERVER_ERROR);
         }
 
         return jwt.sign(
@@ -50,13 +51,13 @@ export class AuthService {
      */
     static verifyToken(token: string): JwtPayload {
         if (!process.env.JWT_SECRET) {
-            throw new AppError('JWT secret not configured', 500);
+            throw new AppError(ERROR_MESSAGES.AUTH.JWT_SECRET_NOT_CONFIGURED, HTTP_STATUS.INTERNAL_SERVER_ERROR);
         }
 
         try {
             return jwt.verify(token, process.env.JWT_SECRET) as JwtPayload;
         } catch (error) {
-            throw new AppError('Invalid token', 401);
+            throw new AppError(ERROR_MESSAGES.AUTH.INVALID_TOKEN, HTTP_STATUS.UNAUTHORIZED);
         }
     }
 
@@ -65,7 +66,7 @@ export class AuthService {
      */
     static extractTokenFromHeader(authHeader: string | undefined): string {
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            throw new AppError('No token provided', 401);
+            throw new AppError(ERROR_MESSAGES.AUTH.NO_TOKEN_PROVIDED, HTTP_STATUS.UNAUTHORIZED);
         }
 
         return authHeader.substring(7); // Remove 'Bearer ' prefix

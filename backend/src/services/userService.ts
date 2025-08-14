@@ -3,12 +3,12 @@
  * Handles user registration, authentication, and profile management
  */
 
-import * as bcrypt from 'bcrypt';
 import User from '../models/User';
 import AppError from '../../../shared/appError';
 import { IUserRegistrationRequest } from '../../../shared/user.interface';
 import { IUserDocument } from '../types/declarations';
 import { AuthService } from './authService';
+import { ERROR_MESSAGES, HTTP_STATUS, VALIDATION_MESSAGES } from '../constants/validationConstants';
 
 /**
  * Service class for user-related operations including registration, authentication, and profile management.
@@ -29,10 +29,10 @@ export class UserService {
 
         if (existingUser) {
             if (existingUser.email === email) {
-                throw new AppError('User with that email already exists.', 400);
+                throw new AppError(VALIDATION_MESSAGES.EMAIL.TAKEN, HTTP_STATUS.BAD_REQUEST);
             }
             if (existingUser.username === username) {
-                throw new AppError('Username is already taken.', 400);
+                throw new AppError(VALIDATION_MESSAGES.USERNAME.TAKEN, HTTP_STATUS.BAD_REQUEST);
             }
         }
     }
@@ -81,13 +81,13 @@ export class UserService {
         const user = await User.findOne({ email }).select('+passwordHash');
         
         if (!user) {
-            throw new AppError('Invalid credentials.', 401);
+            throw new AppError(ERROR_MESSAGES.USER.INVALID_CREDENTIALS, HTTP_STATUS.UNAUTHORIZED);
         }
 
-        const isMatch = await bcrypt.compare(password, user.passwordHash);
+        const isMatch = await user.matchPassword(password);
         
         if (!isMatch) {
-            throw new AppError('Invalid email or password.', 401);
+            throw new AppError(ERROR_MESSAGES.USER.INVALID_EMAIL_PASSWORD, HTTP_STATUS.UNAUTHORIZED);
         }
 
         // Generate token using Mongoose virtual id getter for safety
@@ -107,7 +107,7 @@ export class UserService {
         const user = await User.findById(userId);
         
         if (!user) {
-            throw new AppError('User not found.', 404);
+            throw new AppError(ERROR_MESSAGES.USER.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
         }
 
         return user;
@@ -120,7 +120,7 @@ export class UserService {
         const deletedUser = await User.findByIdAndDelete(userId);
         
         if (!deletedUser) {
-            throw new AppError('User not found.', 404);
+            throw new AppError(ERROR_MESSAGES.USER.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
         }
     }
 
@@ -131,7 +131,7 @@ export class UserService {
         const user = await User.findById(userId);
 
         if (!user) {
-            throw new AppError('User not found.', 404);
+            throw new AppError(ERROR_MESSAGES.USER.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
         }
 
         // Update user fields if they are present in the update data

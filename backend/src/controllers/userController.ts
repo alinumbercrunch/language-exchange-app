@@ -71,10 +71,8 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
  * @returns Success response with user profile data
  */
 export const getUserProfile = authenticatedAsyncHandler<AuthenticatedRequest>(async (req, res) => {
-    if (!req.user) {
-        return ResponseHelper.error(res, 'Authentication error, user not found.', 401);
-    }
-    const user = await UserService.getUserById(req.user.id);
+    // User is guaranteed to exist due to authenticatedAsyncHandler
+    const user = await UserService.getUserById(req.user!.id);
     
     return ResponseHelper.success(
         res, 

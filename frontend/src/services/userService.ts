@@ -2,17 +2,7 @@
 import AppError from '../../../shared/appError';
 import { API_CONFIG } from '../constants/apiConstants';
 
-import type { IUser, IUserRegistrationRequest } from '../../../shared/user.interface';
-
-/**
- * Validation error interface matching express-validator format.
- */
-interface ValidationError {
-  type: string;
-  msg: string;
-  path: string;
-  location: string;
-}
+import type { IUser, IUserRegistrationRequest, ValidationError } from '../../../shared/user.interface';
 
 /**
  * Registers a new user with the backend API.
