@@ -1,6 +1,6 @@
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
-import { PassportStatic } from 'passport';
-import User from '../models/User'; 
+import type { PassportStatic } from 'passport';
+import User from '../models/User';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -12,14 +12,14 @@ dotenv.config();
  * If valid, it finds the user in the database and attaches them to req.user.
  */
 const configurePassport = (passport: PassportStatic) => {
-    const secret = process.env.JWT_SECRET;
+    const _secret = process.env.JWT_SECRET;
     // console.log('Passport JWT Secret:', secret);
     // Options for the JWT strategy
     const opts = {
         // How to extract the JWT from the request
         jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
         // The secret key used to sign the JWTs (must match the one used for generation)
-        secretOrKey: process.env.JWT_SECRET!, // '!' asserts that JWT_SECRET will be defined at runtime
+        secretOrKey: process.env.JWT_SECRET ?? '',
     };
 
     // Use the JWT strategy
@@ -28,7 +28,7 @@ const configurePassport = (passport: PassportStatic) => {
             try {
                 // The jwt_payload contains the data you signed into the token (e.g., user ID)
                 // Find the user in your database using the ID from the payload
-                const user = await User.findById(jwt_payload.id)
+                const user = await User.findById(jwt_payload.id);
 
                 if (user) {
                     // If the user is found, authentication is successful.
