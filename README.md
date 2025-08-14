@@ -2,18 +2,48 @@
 
 A modern language exchange platform built with Next.js, Express.js, and MongoDB.
 
+## Quick Start
+
+```bash
+# Install all dependencies
+npm install
+
+# Start development servers
+npm run dev --workspace=frontend  # Frontend at http://localhost:3000
+npm run dev --workspace=backend   # Backend at http://localhost:5000
+```
+
+## 📖 Documentation
+
+For comprehensive documentation, please visit our [docs folder](docs/README.md):
+
+- **[Complete Project Documentation](docs/README.md)** - Full project overview, setup, and features
+- **[Architecture Documentation](docs/ARCHITECTURE.md)** - System architecture and design patterns  
+- **[Coding Standards](docs/coding-standards.md)** - Development guidelines and conventions
+- **[Git Workflow](docs/git-workflow.md)** - Branching strategy and commit conventions
+
 ## Project Structure
 
-This is a monorepo using npm workspaces with the following structure:
+```
+├── frontend/     # Next.js application
+├── backend/      # Express.js API
+├── shared/       # Shared types and utilities
+├── docs/         # 📖 Complete documentation
+└── package.json  # Workspace configuration
+```
 
-```
-├── package.json          # Root package with workspace configuration
-├── package-lock.json     # Single lockfile for entire project
-├── frontend/             # Next.js frontend application
-├── backend/              # Express.js backend API
-├── shared/               # Shared types and utilities
-└── docs/                 # Project documentation
-```
+## Features
+
+✅ User registration and authentication  
+✅ Language learning profiles  
+✅ Modern responsive UI  
+✅ TypeScript throughout  
+🚧 Real-time messaging  
+🚧 Language matching  
+
+---
+
+**For detailed information, development setup, and contribution guidelines, see [docs/README.md](docs/README.md)**
 
 ## Development Setup
 
