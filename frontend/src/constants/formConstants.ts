@@ -3,7 +3,7 @@
  * Contains field options, validation messages, and default form values.
  */
 
-import { PROFICIENCY_LEVELS } from '../../../shared/user.interface';
+import { PROFICIENCY_LEVELS, GENDER_OPTIONS as SHARED_GENDER_OPTIONS, SUPPORTED_LANGUAGES, SUPPORTED_COUNTRIES } from '../../../shared/user.interface';
 
 import type { IUserRegistrationRequest } from '../../../shared/user.interface';
 
@@ -15,42 +15,20 @@ export const PROFICIENCY_OPTIONS = PROFICIENCY_LEVELS.map(level => ({
     label: level
 }));
 
-export const GENDER_OPTIONS = [
-    { value: 'Male', label: 'Male' },
-    { value: 'Female', label: 'Female' },
-    { value: 'Non-binary', label: 'Non-binary' },
-    { value: 'Prefer not to say', label: 'Prefer not to say' },
-] as const;
+export const GENDER_OPTIONS = SHARED_GENDER_OPTIONS.map(gender => ({
+    value: gender,
+    label: gender
+}));
 
-export const LANGUAGE_OPTIONS = [
-    { value: 'English', label: 'English' },
-    { value: 'Spanish', label: 'Spanish' },
-    { value: 'French', label: 'French' },
-    { value: 'German', label: 'German' },
-    { value: 'Italian', label: 'Italian' },
-    { value: 'Portuguese', label: 'Portuguese' },
-    { value: 'Russian', label: 'Russian' },
-    { value: 'Chinese', label: 'Chinese' },
-    { value: 'Japanese', label: 'Japanese' },
-    { value: 'Korean', label: 'Korean' },
-    { value: 'Arabic', label: 'Arabic' },
-    { value: 'Hindi', label: 'Hindi' }
-] as const;
+export const LANGUAGE_OPTIONS = SUPPORTED_LANGUAGES.map(language => ({
+    value: language,
+    label: language
+}));
 
-export const COUNTRY_OPTIONS = [
-    { value: 'United States', label: 'United States' },
-    { value: 'Canada', label: 'Canada' },
-    { value: 'United Kingdom', label: 'United Kingdom' },
-    { value: 'Germany', label: 'Germany' },
-    { value: 'France', label: 'France' },
-    { value: 'Spain', label: 'Spain' },
-    { value: 'Italy', label: 'Italy' },
-    { value: 'Japan', label: 'Japan' },
-    { value: 'South Korea', label: 'South Korea' },
-    { value: 'China', label: 'China' },
-    { value: 'Australia', label: 'Australia' },
-    { value: 'Brazil', label: 'Brazil' }
-] as const;
+export const COUNTRY_OPTIONS = SUPPORTED_COUNTRIES.map(country => ({
+    value: country,
+    label: country
+}));
 
 /**
  * Default form values for user registration.
@@ -64,14 +42,14 @@ export const DEFAULT_REGISTRATION_DATA: IUserRegistrationRequest = {
     familyName: '',
     bio: '',
     profileOptions: {
-        nativeLanguage: '',
+        nativeLanguage: 'English' as const,
         practicingLanguage: {
-            language: '',
+            language: 'Japanese' as const,
             proficiency: 'Beginner' as const,
         },
-        country: '',
+        country: 'United States' as const,
         city: '',
         gender: 'Prefer not to say' as const,
         age: 18,
     },
-} as const;
+};

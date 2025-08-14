@@ -3,7 +3,7 @@
  * Contains validation rules, error messages, and supported values for user data
  */
 
-import { PROFICIENCY_LEVELS } from '../../../shared/user.interface';
+import { PROFICIENCY_LEVELS, GENDER_OPTIONS, SUPPORTED_LANGUAGES, SUPPORTED_COUNTRIES } from '../../../shared/user.interface';
 
 /**
  * Validation rules for user input fields with length and pattern constraints.
@@ -29,35 +29,6 @@ export const VALIDATION_RULES = {
         MAX: 120,
     },
 } as const;
-
-/**
- * Gender options for user profiles (matching frontend options).
- */
-export const GENDER_OPTIONS = [
-    'Male',
-    'Female',
-    'Non-binary',
-    'Prefer not to say'
-] as const;
-
-/**
- * Supported languages for native and practicing language selection.
- */
-export const SUPPORTED_LANGUAGES = [
-    'English', 'Spanish', 'French', 'German', 'Italian', 'Portuguese',
-    'Russian', 'Chinese', 'Japanese', 'Korean', 'Arabic', 'Hindi',
-    'Dutch', 'Swedish', 'Norwegian', 'Danish', 'Finnish', 'Polish'
-] as const;
-
-/**
- * Supported countries for user location selection.
- */
-export const SUPPORTED_COUNTRIES = [
-    'United States', 'Canada', 'United Kingdom', 'Germany', 'France',
-    'Spain', 'Italy', 'Netherlands', 'Sweden', 'Norway', 'Denmark',
-    'Finland', 'Poland', 'Russia', 'China', 'Japan', 'South Korea',
-    'Australia', 'New Zealand', 'Brazil', 'Mexico', 'Argentina'
-] as const;
 
 /**
  * Standardized validation error messages for consistent user feedback.
