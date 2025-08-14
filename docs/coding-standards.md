@@ -145,37 +145,6 @@ export const registerUser = asyncHandler(async (req: Request, res: Response) => 
     // Implementation
 });
 ```
- * @param className - Additional CSS classes
- * @param children - Button content
- * @param disabled - Whether the button is disabled
- * @returns A styled button element
- */
-export function Button({ 
-    variant = 'primary', 
-    size = 'md', 
-    isLoading = false,
-    className = '',
-    children,
-    disabled,
-    ...props 
-}: ButtonProps) {
-  // Implementation
-}
-
-/**
- * Props for the Button component.
- */
-export interface ButtonProps {
-    /** Visual style variant of the button */
-    variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
-    /** Size of the button */
-    size?: 'sm' | 'md' | 'lg';
-    /** Whether the button is in a loading state */
-    isLoading?: boolean;
-    /** Button content */
-    children: React.ReactNode;
-}
-```
 
 ### Documentation Guidelines
 
