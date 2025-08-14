@@ -295,3 +295,28 @@ const handleClick = useCallback(() => {
   onAction(id);
 }, [onAction, id]);
 ```
+
+#### Current Implementation - Utility Usage Patterns
+```typescript
+// ✅ Import utilities from barrel export
+import { api, validateEmail, classNames, logger } from '../utils';
+
+// ✅ Use centralized API client
+const users = await api.get<User[]>('/api/users');
+
+// ✅ Use validation utilities consistently
+const emailValidation = validateEmail(email);
+if (!emailValidation.isValid) {
+  setError(emailValidation.error);
+}
+
+// ✅ Use styling utilities for consistent classes
+const buttonClass = classNames(
+  commonStyles.buttonBase,
+  commonStyles.buttonPrimary,
+  isLoading && 'opacity-50'
+);
+
+// ✅ Use contextual logging
+loggers.api.error('API request failed', error);
+```

@@ -1,8 +1,8 @@
 
-import AppError from '../../../shared/appError';
 import { API_CONFIG } from '../constants/apiConstants';
+import { api } from '../utils/apiClient';
 
-import type { IUser, IUserRegistrationRequest, ValidationError } from '../../../shared/user.interface';
+import type { IUser, IUserRegistrationRequest } from '../../../shared/user.interface';
 
 /**
  * Registers a new user with the backend API.
@@ -12,27 +12,15 @@ import type { IUser, IUserRegistrationRequest, ValidationError } from '../../../
  * @throws {AppError} When registration fails or validation errors occur
  */
 export async function registerUser(userData: IUserRegistrationRequest): Promise<{ message: string; user: IUser; token: string }> {
-  const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.USERS_REGISTER}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(userData),
-  });
+  const result = await api.post<{ user: IUser; token: string }>(
+    API_CONFIG.ENDPOINTS.USERS_REGISTER,
+    userData
+  );
 
-  const data = await response.json();
-
-  if (!response.ok) {
-    // Use the new ValidationError type for better type safety
-    const errorMessage = data.errors ? data.errors.map((err: ValidationError) => err.msg).join(', ') : data.message;
-    throw new AppError(errorMessage || 'An error occurred during registration.', response.status);
-  }
-
-  // The backend returns { success: true, message: "...", data: { user: {...}, token: "..." } }
   return {
-    message: data.message,
-    user: data.data.user,
-    token: data.data.token
+    message: 'Registration successful',
+    user: result.user,
+    token: result.token
   };
 }
 
@@ -58,20 +46,10 @@ interface LoginResponse {
  * @throws {AppError} Throws an AppError if the API response is not ok.
  */
 export async function loginUser(loginData: LoginRequest): Promise<LoginResponse> {
-  const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.USERS.LOGIN}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(loginData),
-  });
+  const result = await api.post<LoginResponse>(
+    `${API_CONFIG.ENDPOINTS.AUTH}/login`,
+    loginData
+  );
 
-  const data = await response.json();
-
-  if (!response.ok) {
-    const errorMessage = data.errors ? data.errors.map((err: ValidationError) => err.msg).join(', ') : data.message;
-    throw new AppError(errorMessage || 'An error occurred during login.', response.status);
-  }
-
-  return data;
+  return result;
 }

@@ -170,3 +170,28 @@ export { Button } from "./Button";
 export { Input } from "./Input";
 export { Modal } from "./Modal";
 ```
+
+## Current Implementation - Frontend Utilities
+
+Our frontend currently implements the following utility structure:
+
+```
+frontend/src/utils/
+├── apiClient.ts              # HTTP client with error handling
+├── validation.ts             # Form validation functions  
+├── localStorage.ts           # Browser storage utilities
+├── classNames.ts            # CSS class manipulation
+├── logger.ts                # Centralized logging system
+├── formHelpers.ts           # Form data manipulation
+└── index.ts                 # Barrel exports
+```
+
+### Utility Functions Overview
+
+- **apiClient.ts**: Centralized HTTP client with automatic error handling and type safety
+- **validation.ts**: Reusable validation functions for forms (email, password, username, etc.)
+- **localStorage.ts**: Safe browser storage operations with TypeScript support
+- **classNames.ts**: CSS class manipulation utilities and common style patterns
+- **logger.ts**: Centralized logging system with context and performance timing
+- **formHelpers.ts**: Helper functions for form data manipulation
+- **index.ts**: Barrel export for easy imports (`import { api, validateEmail } from '../utils'`)
