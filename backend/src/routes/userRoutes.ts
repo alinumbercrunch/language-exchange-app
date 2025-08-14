@@ -3,9 +3,15 @@
  * Defines API routes for user registration, authentication, and profile management
  */
 
-import { RequestHandler, Router } from 'express';
-import { registerUser, loginUser, getUserProfile, deleteUserProfile, updateUserProfile } from '../controllers/userController';
-import passport from 'passport'; 
+import { Router, type RequestHandler } from 'express';
+import {
+    registerUser,
+    loginUser,
+    getUserProfile,
+    deleteUserProfile,
+    updateUserProfile,
+} from '../controllers/userController';
+import passport from 'passport';
 import { validateRegistration, validateLogin, validateUpdate } from '../middleware/userValidators';
 
 /**
