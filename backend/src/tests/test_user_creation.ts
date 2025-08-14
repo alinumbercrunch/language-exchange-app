@@ -88,11 +88,12 @@ async function runUserCreationTest() {
         console.log('\n--- Test Results ---');
         console.log('All checks complete.');
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('\n--- Test FAILED ---');
         console.error('An error occurred during the test:');
-        console.error('Error Message:', error.message);
-        if (error.errors) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown test error';
+        console.error('Error Message:', errorMessage);
+        if (error instanceof Error && 'errors' in error) {
             console.error('Mongoose Validation Errors Details:', error.errors);
         }
     } finally {

@@ -4,7 +4,7 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
-import { AsyncRequestHandler } from '../types/declarations';
+import { AsyncRequestHandler, AuthenticatedRequest } from '../types/declarations';
 import { ResponseHelper } from './responseHelpers';
 
 /**
@@ -17,12 +17,13 @@ import { ResponseHelper } from './responseHelpers';
 const asyncHandler = <T = Request>(fn: AsyncRequestHandler<T>) =>
     (req: T, res: Response, next: NextFunction) => {
         Promise.resolve(fn(req, res, next)).catch((error) => {
-            // Log the error for debugging purposes
+            // Log the error for debugging purposes (safe property access)
+            const requestInfo = req && typeof req === 'object' ? req as unknown as Request : null;
             console.error('AsyncHandler Error:', {
-                path: (req as any).path,
-                method: (req as any).method,
-                error: error.message,
-                stack: error.stack
+                path: requestInfo?.path || 'unknown',
+                method: requestInfo?.method || 'unknown',
+                error: error instanceof Error ? error.message : 'Unknown error',
+                stack: error instanceof Error ? error.stack : undefined
             });
 
             // If headers are already sent, delegate to Express error handler
@@ -42,7 +43,7 @@ const asyncHandler = <T = Request>(fn: AsyncRequestHandler<T>) =>
 
             // Handle MongoDB duplicate key errors
             if (error.code === 11000) {
-                const field = Object.keys(error.keyValue)[0];
+                const field = Object.keys(error.keyValue ?? {})[0];
                 return ResponseHelper.error(res, `${field} already exists`, 400);
             }
 
@@ -64,7 +65,7 @@ const asyncHandler = <T = Request>(fn: AsyncRequestHandler<T>) =>
  * Specialized async handler for authenticated routes
  * Automatically checks for user authentication
  */
-export const authenticatedAsyncHandler = <T extends { user?: any }>(fn: AsyncRequestHandler<T>) =>
+export const authenticatedAsyncHandler = <T extends AuthenticatedRequest>(fn: AsyncRequestHandler<T>) =>
     (req: T, res: Response, next: NextFunction) => {
         if (!req.user) {
             return ResponseHelper.error(res, 'Authentication required', 401);

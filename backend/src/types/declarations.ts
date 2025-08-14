@@ -23,7 +23,7 @@ export type AsyncRequestHandler<T = Request> = (
   req: T,
   res: Response,
   next: NextFunction
-) => Promise<any>;
+) => Promise<Response | void>;
 
 /**
  * Extended Error interface with HTTP status code.

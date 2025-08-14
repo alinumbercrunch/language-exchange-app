@@ -6,7 +6,7 @@
 import * as bcrypt from 'bcrypt';
 import User from '../models/User';
 import AppError from '../../../shared/appError';
-import { IUserRegistrationRequest } from '../types/declarations';
+import { IUserRegistrationRequest, IUserDocument } from '../types/declarations';
 import { AuthService } from './authService';
 
 /**
@@ -43,7 +43,7 @@ export class UserService {
      * @returns Promise resolving to object containing saved user and JWT token
      * @throws {AppError} When user already exists or validation fails
      */
-    static async createUser(userData: IUserRegistrationRequest): Promise<any> {
+    static async createUser(userData: IUserRegistrationRequest): Promise<{ user: IUserDocument; token: string }> {
         // Check for existing users
         await this.checkUserExists(userData.email, userData.username);
 
@@ -76,7 +76,7 @@ export class UserService {
      * @returns Promise resolving to object containing user and JWT token
      * @throws {AppError} When credentials are invalid
      */
-    static async authenticateUser(email: string, password: string): Promise<{ user: any; token: string }> {
+    static async authenticateUser(email: string, password: string): Promise<{ user: IUserDocument; token: string }> {
         const user = await User.findOne({ email }).select('+passwordHash');
         
         if (!user) {
@@ -102,7 +102,7 @@ export class UserService {
      * @returns Promise resolving to user document
      * @throws {AppError} When user is not found
      */
-    static async getUserById(userId: string): Promise<any> {
+    static async getUserById(userId: string): Promise<IUserDocument> {
         const user = await User.findById(userId);
         
         if (!user) {
@@ -126,7 +126,7 @@ export class UserService {
     /**
      * Update user profile
      */
-    static async updateUser(userId: string, updateData: Partial<IUserRegistrationRequest>): Promise<any> {
+    static async updateUser(userId: string, updateData: Partial<IUserRegistrationRequest>): Promise<IUserDocument> {
         const user = await User.findById(userId);
 
         if (!user) {

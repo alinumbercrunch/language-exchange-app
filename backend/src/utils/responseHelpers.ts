@@ -5,11 +5,24 @@
 
 import { Response } from 'express';
 import { IUser } from '../../../shared/user.interface';
+import { IUserDocument } from '../types/declarations';
+
+/**
+ * Validation error structure for API responses.
+ */
+export interface ValidationError {
+    /** Field that failed validation */
+    field?: string;
+    /** Error message */
+    message: string;
+    /** Field value that caused the error */
+    value?: unknown;
+}
 
 /**
  * Standard API response interface for consistent formatting.
  */
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
     /** Whether the request was successful */
     success: boolean;
     /** Human-readable message describing the result */
@@ -17,7 +30,7 @@ export interface ApiResponse<T = any> {
     /** Optional data payload */
     data?: T;
     /** Optional validation or other errors */
-    errors?: any[];
+    errors?: ValidationError[];
 }
 
 /**
@@ -50,7 +63,7 @@ export class ResponseHelper {
      * @param errors - Optional array of detailed errors
      * @returns Express Response with standardized error format
      */
-    static error(res: Response, message: string, statusCode: number = 500, errors?: any[]): Response<ApiResponse> {
+    static error(res: Response, message: string, statusCode: number = 500, errors?: ValidationError[]): Response<ApiResponse> {
         return res.status(statusCode).json({
             success: false,
             message,
@@ -68,7 +81,7 @@ export class ResponseHelper {
      * @param statusCode - HTTP status code (default: 200)
      * @returns Express Response with user and token data
      */
-    static authSuccess(res: Response, message: string, user: any, token: string, statusCode: number = 200): Response<ApiResponse> {
+    static authSuccess(res: Response, message: string, user: IUserDocument, token: string, statusCode: number = 200): Response<ApiResponse> {
         return res.status(statusCode).json({
             success: true,
             message,
@@ -80,9 +93,13 @@ export class ResponseHelper {
     }
 
     /**
-     * Send validation error response
+     * Send validation error response with properly typed validation errors.
+     * 
+     * @param res - Express Response object
+     * @param errors - Array of validation errors with field and message info
+     * @returns Express Response with validation error format
      */
-    static validationError(res: Response, errors: any[]): Response<ApiResponse> {
+    static validationError(res: Response, errors: ValidationError[]): Response<ApiResponse> {
         return res.status(400).json({
             success: false,
             message: 'Validation failed',

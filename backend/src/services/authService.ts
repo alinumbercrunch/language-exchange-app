@@ -7,6 +7,18 @@ import * as jwt from 'jsonwebtoken';
 import AppError from '../../../shared/appError';
 
 /**
+ * JWT payload interface for token verification.
+ */
+export interface JwtPayload {
+    /** User ID from the token */
+    id: string;
+    /** Token issued at timestamp */
+    iat?: number;
+    /** Token expiration timestamp */
+    exp?: number;
+}
+
+/**
  * Service class for authentication operations including JWT token management.
  */
 export class AuthService {
@@ -36,13 +48,13 @@ export class AuthService {
      * @returns Decoded token payload
      * @throws {AppError} When JWT secret is not configured or token is invalid
      */
-    static verifyToken(token: string): any {
+    static verifyToken(token: string): JwtPayload {
         if (!process.env.JWT_SECRET) {
             throw new AppError('JWT secret not configured', 500);
         }
 
         try {
-            return jwt.verify(token, process.env.JWT_SECRET);
+            return jwt.verify(token, process.env.JWT_SECRET) as JwtPayload;
         } catch (error) {
             throw new AppError('Invalid token', 401);
         }
