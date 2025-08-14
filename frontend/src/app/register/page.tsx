@@ -1,12 +1,13 @@
 'use client';
 
 import React from 'react';
+
 import styles from './register.module.css';
-import { registerUser } from '../../services/userService';
 import { FormField, SelectField, TextAreaField } from '../../components/FormFields';
 import { DEFAULT_REGISTRATION_DATA, PROFICIENCY_OPTIONS, GENDER_OPTIONS } from '../../constants/formConstants';
-import { useFormState } from '../../hooks/useFormState';
 import { useAsync } from '../../hooks/useAsync';
+import { useFormState } from '../../hooks/useFormState';
+import { registerUser } from '../../services/userService';
 
 const RegistrationForm: React.FC = () => {
     const { formData, handleChange } = useFormState(DEFAULT_REGISTRATION_DATA);

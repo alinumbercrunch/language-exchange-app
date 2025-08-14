@@ -1,6 +1,8 @@
 import { useState, useCallback } from 'react';
+
 import { setNestedValue } from '../utils/formHelpers';
-import { IUserRegistrationRequest } from '../../../shared/user.interface';
+
+import type { IUserRegistrationRequest } from '../../../shared/user.interface';
 
 export function useFormState(initialData: IUserRegistrationRequest) {
     const [formData, setFormData] = useState<IUserRegistrationRequest>(initialData);
