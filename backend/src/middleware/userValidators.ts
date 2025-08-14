@@ -5,7 +5,9 @@
 
 import { body, validationResult } from 'express-validator';
 import { Request, Response, NextFunction } from 'express';
-import { VALIDATION_RULES, PROFICIENCY_LEVELS, GENDER_OPTIONS, SUPPORTED_LANGUAGES } from '../constants/validationConstants';
+
+import { PROFICIENCY_LEVELS } from '../../../shared/user.interface';
+import { VALIDATION_RULES, GENDER_OPTIONS, SUPPORTED_LANGUAGES } from '../constants/validationConstants';
 
 /**
  * Validation chain for user registration.

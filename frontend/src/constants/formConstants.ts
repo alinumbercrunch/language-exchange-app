@@ -3,19 +3,17 @@
  * Contains field options, validation messages, and default form values.
  */
 
+import { PROFICIENCY_LEVELS } from '../../../shared/user.interface';
+
 import type { IUserRegistrationRequest } from '../../../shared/user.interface';
 
 /**
  * Language proficiency level options for select dropdowns.
  */
-export const PROFICIENCY_OPTIONS = [
-    { value: 'Beginner', label: 'Beginner' },
-    { value: 'Elementary', label: 'Elementary' },
-    { value: 'Intermediate', label: 'Intermediate' },
-    { value: 'Upper Intermediate', label: 'Upper Intermediate' },
-    { value: 'Advanced', label: 'Advanced' },
-    { value: 'Native', label: 'Native' }
-] as const;
+export const PROFICIENCY_OPTIONS = PROFICIENCY_LEVELS.map(level => ({
+    value: level,
+    label: level
+}));
 
 export const GENDER_OPTIONS = [
     { value: 'Male', label: 'Male' },

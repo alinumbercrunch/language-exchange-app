@@ -1,7 +1,16 @@
 /**
  * Language proficiency levels for language learning platform.
  */
-export type ProficiencyLevel = 'Beginner' | 'Elementary' | 'Intermediate' | 'Upper Intermediate' | 'Advanced' | 'Native';
+export const PROFICIENCY_LEVELS = [
+    'Beginner',
+    'Elementary', 
+    'Intermediate',
+    'Upper Intermediate',
+    'Advanced',
+    'Native'
+] as const;
+
+export type ProficiencyLevel = typeof PROFICIENCY_LEVELS[number];
 
 export interface IUser {
     // MongoDB has its own ID type. In the backend user.ts file, we are extending this file and the MongoDB document which have different ID types. THis creates an error. Research suggests using a new feature of Mongo DB (HydratedDocument). 

@@ -3,6 +3,8 @@
  * Contains validation rules, error messages, and supported values for user data
  */
 
+import { PROFICIENCY_LEVELS } from '../../../shared/user.interface';
+
 /**
  * Validation rules for user input fields with length and pattern constraints.
  */
@@ -27,18 +29,6 @@ export const VALIDATION_RULES = {
         MAX: 120,
     },
 } as const;
-
-/**
- * Language proficiency levels for language learning (matching frontend options).
- */
-export const PROFICIENCY_LEVELS = [
-    'Beginner',
-    'Elementary', 
-    'Intermediate',
-    'Upper Intermediate',
-    'Advanced',
-    'Native'
-] as const;
 
 /**
  * Gender options for user profiles (matching frontend options).
@@ -102,8 +92,4 @@ export const VALIDATION_MESSAGES = {
     }
 } as const;
 
-/**
- * Exported validation arrays for use in middleware and validation functions.
- */
-export const VALID_PROFICIENCY_LEVELS = PROFICIENCY_LEVELS;
-export const VALID_GENDERS = GENDER_OPTIONS;
+
