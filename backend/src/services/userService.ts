@@ -6,7 +6,8 @@
 import * as bcrypt from 'bcrypt';
 import User from '../models/User';
 import AppError from '../../../shared/appError';
-import { IUserRegistrationRequest, IUserDocument } from '../types/declarations';
+import { IUserRegistrationRequest } from '../../../shared/user.interface';
+import { IUserDocument } from '../types/declarations';
 import { AuthService } from './authService';
 
 /**

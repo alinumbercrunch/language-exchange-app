@@ -6,9 +6,10 @@
 import { Request, Response } from 'express';
 import { UserService } from '../services/userService';
 import { ResponseHelper } from '../utils/responseHelpers';
-import { AuthenticatedRequest, IUserRegistrationRequest } from '../types/declarations';
+import { AuthenticatedRequest } from '../types/declarations';
+import { IUserRegistrationRequest } from '../../../shared/user.interface';
 import asyncHandler from '../utils/asyncHandler';
-import { authenticatedAsyncHandler } from '../utils/validatorHandler';
+import { authenticatedAsyncHandler } from '../utils/asyncHandler';
 import { IUser } from '../../../shared/user.interface';
 
 /**

@@ -43,30 +43,3 @@ export interface IUserDocument extends HydratedDocument<IUser> {
     /** Method to compare passwords during authentication */
     matchPassword(enteredPassword: string): Promise<boolean>; 
 }
-
-/**
- * Request payload interface for user registration endpoint.
- */
-export interface IUserRegistrationRequest {
-    /** Unique username for the account */
-    username: string;
-    /** Email address for the account */
-    email: string;
-    /** Plain text password (will be hashed) */
-    password: string;
-    /** User's first name */
-    firstName: string;
-    familyName: string;
-    bio: string;
-    profileOptions: {
-        nativeLanguage: string;
-        practicingLanguage: {
-            language: string;
-            proficiency: 'Beginner' | 'Intermediate' | 'Advanced';
-        };
-        country: string;
-        city: string;
-        gender: 'Male' | 'Female' | 'Non-binary' | 'Prefer not to say';
-        age: number;
-    };
-}

@@ -63,17 +63,3 @@ export const validatedAsyncHandler = <T = Request>(fn: AsyncRequestHandler<T>) =
             return ResponseHelper.error(res, 'Internal server error', 500);
         });
     };
-
-/**
- * Authenticated handler that checks for user authentication
- */
-export const authenticatedAsyncHandler = <T extends AuthenticatedRequest>(fn: AsyncRequestHandler<T>) =>
-    (req: T, res: Response, next: NextFunction) => {
-        // Check authentication
-        if (!req.user) {
-            return ResponseHelper.error(res, 'Authentication required', 401);
-        }
-
-        // Use regular handler
-        return validatedAsyncHandler(fn)(req, res, next);
-    };
