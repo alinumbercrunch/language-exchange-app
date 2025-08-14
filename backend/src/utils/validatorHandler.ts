@@ -4,7 +4,8 @@ import { ResponseHelper } from './responseHelpers';
 import type { AsyncRequestHandler, AuthenticatedRequest } from '../types/declarations';
 
 /**
- * Basic async handler for error handling
+ * Validated async handler that checks input validation and handles async errors.
+ * Performs express-validator validation before executing the handler function.
  */
 export const validatedAsyncHandler = <T = Request>(fn: AsyncRequestHandler<T>) =>
     (req: T, res: Response, next: NextFunction) => {

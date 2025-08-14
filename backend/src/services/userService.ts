@@ -63,8 +63,8 @@ export class UserService {
 
         const savedUser = await newUser.save();
         
-        // Generate token
-        const token = AuthService.generateToken(savedUser._id.toString());
+        // Generate token using Mongoose virtual id getter for safety
+        const token = AuthService.generateToken(savedUser.id);
         
         return { user: savedUser, token };
     }
@@ -90,8 +90,8 @@ export class UserService {
             throw new AppError('Invalid email or password.', 401);
         }
 
-        // Generate token
-        const token = AuthService.generateToken(user._id.toString());
+        // Generate token using Mongoose virtual id getter for safety
+        const token = AuthService.generateToken(user.id);
 
         return { user, token };
     }
