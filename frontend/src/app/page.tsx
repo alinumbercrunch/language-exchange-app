@@ -10,7 +10,7 @@ import { useAsync } from '../hooks/useAsync';
 // We define it outside the component so it can be memoized with useCallback.
 async function testBackendConnection(): Promise<string> {
   // IMPORTANT: Your backend server must be running
-  const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.TEST}`);
+  const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.HEALTH}`);
 
   if (response.ok) {
     const text = await response.text();
