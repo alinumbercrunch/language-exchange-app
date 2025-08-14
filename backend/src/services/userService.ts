@@ -64,6 +64,7 @@ export class UserService {
         const savedUser = await newUser.save();
         
         // Generate token using Mongoose virtual id getter for safety
+        // Generate token using Mongoose's virtual 'id' getter (string representation of _id)
         const token = AuthService.generateToken(savedUser.id);
         
         return { user: savedUser, token };
