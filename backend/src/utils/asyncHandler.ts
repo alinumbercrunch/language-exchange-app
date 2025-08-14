@@ -3,27 +3,28 @@
  * Automatically catches and handles errors in async route handlers
  */
 
-import { Request, Response, NextFunction } from 'express';
-import { AsyncRequestHandler, AuthenticatedRequest } from '../types/declarations';
+import type { Request, Response, NextFunction } from 'express';
+import type { AsyncRequestHandler, AuthenticatedRequest } from '../types/declarations';
 import { ResponseHelper } from './responseHelpers';
 
 /**
  * Enhanced async handler with improved error handling and logging.
  * Wraps async functions to automatically catch and handle errors without try-catch blocks.
- * 
+ *
  * @param fn - Async request handler function to wrap
  * @returns Express middleware function that handles errors automatically
  */
-const asyncHandler = <T = Request>(fn: AsyncRequestHandler<T>) =>
+const asyncHandler =
+    <T = Request>(fn: AsyncRequestHandler<T>) =>
     (req: T, res: Response, next: NextFunction) => {
         Promise.resolve(fn(req, res, next)).catch((error) => {
             // Log the error for debugging purposes (safe property access)
-            const requestInfo = req && typeof req === 'object' ? req as unknown as Request : null;
+            const requestInfo = req && typeof req === 'object' ? (req as unknown as Request) : null;
             console.error('AsyncHandler Error:', {
-                path: requestInfo?.path || 'unknown',
-                method: requestInfo?.method || 'unknown',
+                path: requestInfo?.path ?? 'unknown',
+                method: requestInfo?.method ?? 'unknown',
                 error: error instanceof Error ? error.message : 'Unknown error',
-                stack: error instanceof Error ? error.stack : undefined
+                stack: error instanceof Error ? error.stack : undefined,
             });
 
             // If headers are already sent, delegate to Express error handler
@@ -71,7 +72,8 @@ const asyncHandler = <T = Request>(fn: AsyncRequestHandler<T>) =>
  * Specialized async handler for authenticated routes
  * Automatically checks for user authentication
  */
-export const authenticatedAsyncHandler = <T extends AuthenticatedRequest>(fn: AsyncRequestHandler<T>) =>
+export const authenticatedAsyncHandler =
+    <T extends AuthenticatedRequest>(fn: AsyncRequestHandler<T>) =>
     (req: T, res: Response, next: NextFunction) => {
         if (!req.user) {
             return ResponseHelper.error(res, 'Authentication required', 401);
@@ -81,4 +83,3 @@ export const authenticatedAsyncHandler = <T extends AuthenticatedRequest>(fn: As
     };
 
 export default asyncHandler;
-

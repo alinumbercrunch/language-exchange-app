@@ -24,8 +24,8 @@ app.use(express.json());
 
 // --- Place the logging middleware here ---
 app.use((req, res, next) => {
-    console.log(`[REQUEST] ${req.method} ${req.originalUrl}`);
-    console.log('Body:', req.body);
+    console.warn(`[REQUEST] ${req.method} ${req.originalUrl}`);
+    console.warn('Body:', req.body);
     next();
 });
 
@@ -43,8 +43,8 @@ app.use('/api/users', userRoutes);
 // Error Handling Middleware
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT ?? 5000;
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.warn(`Server running on port ${PORT}`);
 });
