@@ -43,8 +43,14 @@ const asyncHandler = <T = Request>(fn: AsyncRequestHandler<T>) =>
 
             // Handle MongoDB duplicate key errors
             if (error.code === 11000) {
-                const field = Object.keys(error.keyValue ?? {})[0];
-                return ResponseHelper.error(res, `${field} already exists`, 400);
+                const keyValue = error.keyValue;
+                if (keyValue && typeof keyValue === 'object') {
+                    const field = Object.keys(keyValue)[0];
+                    if (field) {
+                        return ResponseHelper.error(res, `${field} already exists`, 400);
+                    }
+                }
+                return ResponseHelper.error(res, 'Duplicate entry detected', 400);
             }
 
             // Handle JWT errors

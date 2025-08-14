@@ -7,6 +7,7 @@ export const API_CONFIG = {
     /** API endpoint paths */
     ENDPOINTS: {
         USERS: '/api/users',
+        USERS_REGISTER: '/api/users/register',
         AUTH: '/api/auth',
         TEST: '/api/test',
         HEALTH: '/'
