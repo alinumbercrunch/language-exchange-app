@@ -2,6 +2,10 @@
 
 A modern language exchange platform built with Next.js, Express.js, and MongoDB.
 
+# Language Exchange App (MeGoodSpeak)
+
+A modern language exchange platform built with Next.js, Express.js, and MongoDB.
+
 ## Quick Start
 
 ```bash
@@ -24,12 +28,15 @@ For comprehensive documentation, please visit our [docs folder](docs/README.md):
 
 ## Project Structure
 
+This is a monorepo using npm workspaces with the following structure:
+
 ```
-├── frontend/     # Next.js application
-├── backend/      # Express.js API
-├── shared/       # Shared types and utilities
-├── docs/         # 📖 Complete documentation
-└── package.json  # Workspace configuration
+├── package.json          # Root package with workspace configuration
+├── package-lock.json     # Single lockfile for entire project
+├── frontend/             # Next.js frontend application
+├── backend/              # Express.js backend API
+├── shared/               # Shared types and utilities
+└── docs/                 # 📖 Complete documentation
 ```
 
 ## Features
@@ -44,7 +51,6 @@ For comprehensive documentation, please visit our [docs folder](docs/README.md):
 ---
 
 **For detailed information, development setup, and contribution guidelines, see [docs/README.md](docs/README.md)**
-
 ## Development Setup
 
 ### Prerequisites

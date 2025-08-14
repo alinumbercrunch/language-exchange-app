@@ -1,9 +1,10 @@
 'use client'; // This directive makes this a Client Component
 
 import { useCallback } from 'react';
-import { useAsync } from '../hooks/useAsync';
-import { API_CONFIG } from '../constants/apiConstants';
+
 import AppError from '../../../shared/appError';
+import { API_CONFIG } from '../constants/apiConstants';
+import { useAsync } from '../hooks/useAsync';
 
 // This function contains the actual API call logic.
 // We define it outside the component so it can be memoized with useCallback.

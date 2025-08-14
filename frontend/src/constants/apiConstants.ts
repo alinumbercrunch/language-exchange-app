@@ -8,6 +8,7 @@ export const API_CONFIG = {
     ENDPOINTS: {
         USERS: '/api/users',
         AUTH: '/api/auth',
-        TEST: '/api/test'
+        TEST: '/api/test',
+        HEALTH: '/'
     }
 } as const;
