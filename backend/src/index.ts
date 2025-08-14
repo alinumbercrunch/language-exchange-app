@@ -1,4 +1,7 @@
-// backend/src/index.ts
+/**
+ * Main Server Entry Point - Express.js application setup
+ * Configures middleware, routes, database connection, and authentication
+ */
 
 import express from 'express';
 import dotenv from 'dotenv';
@@ -8,7 +11,10 @@ import cors from 'cors';
 import passport from 'passport';
 import configurePassport from './config/passport';
 
+// Load environment variables
 dotenv.config();
+
+// Connect to MongoDB
 connectDB();
 
 const app = express();

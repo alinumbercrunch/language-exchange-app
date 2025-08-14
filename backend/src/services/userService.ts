@@ -1,12 +1,26 @@
-// backend/src/services/userService.ts
+/**
+ * User Service - Business logic for user operations
+ * Handles user registration, authentication, and profile management
+ */
 
 import User from '../models/User';
 import AppError from '../../../shared/appError';
-import { IUserRegistrationRequest, IUser } from '../../../shared/user.interface';
+import { IUserRegistrationRequest } from '../../../shared/user.interface';
+import { IUserDocument } from '../types/declarations';
+import { AuthService } from './authService';
+import { ERROR_MESSAGES, HTTP_STATUS, VALIDATION_MESSAGES } from '../constants/validationConstants';
 
+/**
+ * Service class for user-related operations including registration, authentication, and profile management.
+ */
 export class UserService {
     /**
-     * Check if user exists by email or username
+     * Check if user exists by email or username to prevent duplicates.
+     * 
+     * @param email - Email address to check
+     * @param username - Username to check
+     * @throws {AppError} When user already exists with given email or username
+     * @returns Promise that resolves when no conflicts are found
      */
     static async checkUserExists(email: string, username: string): Promise<void> {
         const existingUser = await User.findOne({
@@ -15,18 +29,22 @@ export class UserService {
 
         if (existingUser) {
             if (existingUser.email === email) {
-                throw new AppError('User with that email already exists.', 400);
+                throw new AppError(VALIDATION_MESSAGES.EMAIL.TAKEN, HTTP_STATUS.BAD_REQUEST);
             }
             if (existingUser.username === username) {
-                throw new AppError('Username is already taken.', 400);
+                throw new AppError(VALIDATION_MESSAGES.USERNAME.TAKEN, HTTP_STATUS.BAD_REQUEST);
             }
         }
     }
 
     /**
-     * Create new user with validation
+     * Create new user with validation and return user data with authentication token.
+     * 
+     * @param userData - User registration data including profile information
+     * @returns Promise resolving to object containing saved user and JWT token
+     * @throws {AppError} When user already exists or validation fails
      */
-    static async createUser(userData: IUserRegistrationRequest): Promise<any> {
+    static async createUser(userData: IUserRegistrationRequest): Promise<{ user: IUserDocument; token: string }> {
         // Check for existing users
         await this.checkUserExists(userData.email, userData.username);
 
@@ -43,37 +61,54 @@ export class UserService {
             profileOptions: userData.profileOptions,
         });
 
-        return await newUser.save();
+        const savedUser = await newUser.save();
+        
+        // Generate token using Mongoose virtual id getter for safety
+        // Generate token using Mongoose's virtual 'id' getter (string representation of _id)
+        const token = AuthService.generateToken(savedUser.id);
+        
+        return { user: savedUser, token };
     }
 
     /**
-     * Authenticate user credentials
+     * Authenticate user credentials and return user data with token.
+     * 
+     * @param email - User's email address
+     * @param password - User's plain text password
+     * @returns Promise resolving to object containing user and JWT token
+     * @throws {AppError} When credentials are invalid
      */
-    static async authenticateUser(email: string, password: string): Promise<any> {
+    static async authenticateUser(email: string, password: string): Promise<{ user: IUserDocument; token: string }> {
         const user = await User.findOne({ email }).select('+passwordHash');
         
         if (!user) {
-            throw new AppError('Invalid credentials.', 401);
+            throw new AppError(ERROR_MESSAGES.USER.INVALID_CREDENTIALS, HTTP_STATUS.UNAUTHORIZED);
         }
 
-        const bcrypt = require('bcrypt');
-        const isMatch = await bcrypt.compare(password, user.passwordHash);
+        const isMatch = await user.matchPassword(password);
         
         if (!isMatch) {
-            throw new AppError('Invalid email or password.', 401);
+            throw new AppError(ERROR_MESSAGES.USER.INVALID_EMAIL_PASSWORD, HTTP_STATUS.UNAUTHORIZED);
         }
 
-        return user;
+        // Generate token using Mongoose virtual id getter for safety
+        const token = AuthService.generateToken(user.id);
+
+        return { user, token };
     }
 
     /**
-     * Get user by ID (for protected routes)
+     * Get user by ID for protected routes and profile access.
+     * 
+     * @param userId - MongoDB ObjectId as string
+     * @returns Promise resolving to user document
+     * @throws {AppError} When user is not found
      */
-    static async getUserById(userId: string): Promise<any> {
+    static async getUserById(userId: string): Promise<IUserDocument> {
         const user = await User.findById(userId);
         
         if (!user) {
-            throw new AppError('User not found.', 404);
+            throw new AppError(ERROR_MESSAGES.USER.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
         }
 
         return user;
@@ -86,18 +121,18 @@ export class UserService {
         const deletedUser = await User.findByIdAndDelete(userId);
         
         if (!deletedUser) {
-            throw new AppError('User not found.', 404);
+            throw new AppError(ERROR_MESSAGES.USER.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
         }
     }
 
     /**
      * Update user profile
      */
-    static async updateUser(userId: string, updateData: Partial<IUserRegistrationRequest>): Promise<any> {
+    static async updateUser(userId: string, updateData: Partial<IUserRegistrationRequest>): Promise<IUserDocument> {
         const user = await User.findById(userId);
 
         if (!user) {
-            throw new AppError('User not found.', 404);
+            throw new AppError(ERROR_MESSAGES.USER.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
         }
 
         // Update user fields if they are present in the update data

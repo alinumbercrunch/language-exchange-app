@@ -1,23 +1,41 @@
+/**
+ * User Routes - Express routing configuration for user endpoints
+ * Defines API routes for user registration, authentication, and profile management
+ */
+
 import { RequestHandler, Router } from 'express';
-import { registerUser, loginUser, getUserProfile, deleteUserProfile, updateUserProfile } from '../controllers/userController'; // Import the controller function
+import { registerUser, loginUser, getUserProfile, deleteUserProfile, updateUserProfile } from '../controllers/userController';
 import passport from 'passport'; 
-
-const router = Router(); // Create a new Express router
-
-// Define the registration route
-// When a POST request comes to /api/users/register, it will be handled by registerUser
 import { validateRegistration, validateLogin, validateUpdate } from '../middleware/userValidators';
 
+/**
+ * Express router instance for user-related endpoints.
+ */
+const router = Router();
+
+/**
+ * @route POST /api/users/register
+ * @desc Register a new user account
+ * @access Public
+ */
 router.post('/register', validateRegistration, registerUser);
 
-// Define the login route
-// When a POST request comes to /api/users/login, it will be handled by loginUser
+/**
+ * @route POST /api/users/login
+ * @desc Authenticate user login credentials
+ * @access Public
+ */
 router.post('/login', validateLogin, loginUser);
 
+/**
+ * @route GET /api/users/profile
+ * @desc Get authenticated user's profile
+ * @access Private (requires JWT token)
+ */
 router.get(
     '/profile',
-    passport.authenticate('jwt', { session: false }), // This is the protection middleware
-    getUserProfile as RequestHandler // Your controller function to get the profile
+    passport.authenticate('jwt', { session: false }), // JWT authentication middleware
+    getUserProfile as RequestHandler
 );
 
 router.delete(

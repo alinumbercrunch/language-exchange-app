@@ -16,8 +16,9 @@ const connectDB = async () => {
 
         const conn = await mongoose.connect(process.env.MONGO_URI);
         console.log(`MongoDB Connected: ${conn.connection.host}`);
-    } catch (error: any) {
-        console.error(`Error connecting to MongoDB: ${error.message}`);
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown database connection error';
+        console.error(`Error connecting to MongoDB: ${errorMessage}`);
         process.exit(1); // Exit process with failure
     }
 };

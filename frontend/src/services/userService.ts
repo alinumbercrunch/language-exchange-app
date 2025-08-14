@@ -2,25 +2,17 @@
 import AppError from '../../../shared/appError';
 import { API_CONFIG } from '../constants/apiConstants';
 
-import type { IUser, IUserRegistrationRequest } from '../../../shared/user.interface';
-
-// Define a type for the validation errors returned by express-validator
-interface ValidationError {
-  type: string;
-  msg: string;
-  path: string;
-  location: string;
-}
+import type { IUser, IUserRegistrationRequest, ValidationError } from '../../../shared/user.interface';
 
 /**
- * Registers a new user by making a POST request to the backend API.
- *
- * @param userData The user registration data.
- * @returns The newly created user data.
- * @throws {AppError} Throws an AppError if the API response is not ok.
+ * Registers a new user with the backend API.
+ * 
+ * @param userData - User registration data including profile information
+ * @returns Promise resolving to registration response with user data and token
+ * @throws {AppError} When registration fails or validation errors occur
  */
 export async function registerUser(userData: IUserRegistrationRequest): Promise<{ message: string; user: IUser; token: string }> {
-  const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.USERS.REGISTER}`, {
+  const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.USERS_REGISTER}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -36,5 +28,10 @@ export async function registerUser(userData: IUserRegistrationRequest): Promise<
     throw new AppError(errorMessage || 'An error occurred during registration.', response.status);
   }
 
-  return data;
+  // The backend returns { success: true, message: "...", data: { user: {...}, token: "..." } }
+  return {
+    message: data.message,
+    user: data.data.user,
+    token: data.data.token
+  };
 }
