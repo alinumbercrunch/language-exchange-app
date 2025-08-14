@@ -40,7 +40,7 @@ export const validatedAsyncHandler = <T = Request>(fn: AsyncRequestHandler<T>) =
 
             // Handle MongoDB duplicate key errors
             if (error.code === 11000) {
-                const field = Object.keys(error.keyValue || {})[0];
+                const field = Object.keys(error.keyValue ?? {})[0];
                 return ResponseHelper.error(res, `${field} already exists`, 400);
             }
 

@@ -2,10 +2,6 @@
 
 A modern language exchange platform built with Next.js, Express.js, and MongoDB.
 
-# Language Exchange App (MeGoodSpeak)
-
-A modern language exchange platform built with Next.js, Express.js, and MongoDB.
-
 ## Quick Start
 
 ```bash

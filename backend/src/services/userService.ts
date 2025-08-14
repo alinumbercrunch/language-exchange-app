@@ -62,9 +62,6 @@ export class UserService {
 
         const savedUser = await newUser.save();
         
-        // Debug: Log what we're returning
-        console.log('UserService returning savedUser:', JSON.stringify(savedUser.toJSON(), null, 2));
-        
         // Generate token
         const token = AuthService.generateToken(savedUser._id.toString());
         
