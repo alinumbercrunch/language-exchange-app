@@ -18,7 +18,10 @@
     body('profileOptions.practicingLanguage.language')
         .isIn(SUPPORTED_LANGUAGES)
         .withMessage(VALIDATION_MESSAGES.PERSONAL.PRACTICING_LANGUAGE_INVALID),r rules for user operations
- * Provides validation chains for registration, login, and profile updates
+ * Middleware for validating user-related requests.
+ *
+ * Provides validation chains for user registration, login, and profile updates,
+ * ensuring that incoming request bodies meet the required format and constraints.
  */
 
 import { body, validationResult } from 'express-validator';
