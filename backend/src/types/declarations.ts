@@ -3,9 +3,9 @@
  * Defines custom types for Express requests, Mongoose documents, and API contracts
  */
 
-import { Request, Response, NextFunction } from 'express';
-import { HydratedDocument } from 'mongoose';
-import { IUser } from '../../../shared/user.interface';
+import type { Request, Response, NextFunction } from 'express';
+import type { HydratedDocument } from 'mongoose';
+import type { IUser } from '../../../shared/user.interface';
 
 /**
  * Extended Express Request interface for authenticated routes.
@@ -20,9 +20,9 @@ export interface AuthenticatedRequest extends Request {
  * Type definition for async request handlers to ensure proper error handling.
  */
 export type AsyncRequestHandler<T = Request> = (
-  req: T,
-  res: Response,
-  next: NextFunction
+    req: T,
+    res: Response,
+    next: NextFunction
 ) => Promise<Response | void>;
 
 /**
@@ -39,7 +39,7 @@ export interface ErrorType extends Error {
  */
 export interface IUserDocument extends HydratedDocument<IUser> {
     /** Hashed password (not exposed in JSON responses) */
-    passwordHash: string; 
+    passwordHash: string;
     /** Method to compare passwords during authentication */
-    matchPassword(enteredPassword: string): Promise<boolean>; 
+    matchPassword(enteredPassword: string): Promise<boolean>;
 }
