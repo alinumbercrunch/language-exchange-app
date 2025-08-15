@@ -1,4 +1,7 @@
-// backend/src/index.ts
+/**
+ * Main Server Entry Point - Express.js application setup
+ * Configures middleware, routes, database connection, and authentication
+ */
 
 import express from 'express';
 import dotenv from 'dotenv';
@@ -8,7 +11,10 @@ import cors from 'cors';
 import passport from 'passport';
 import configurePassport from './config/passport';
 
+// Load environment variables
 dotenv.config();
+
+// Connect to MongoDB
 connectDB();
 
 const app = express();
@@ -18,8 +24,8 @@ app.use(express.json());
 
 // --- Place the logging middleware here ---
 app.use((req, res, next) => {
-    console.log(`[REQUEST] ${req.method} ${req.originalUrl}`);
-    console.log('Body:', req.body);
+    console.warn(`[REQUEST] ${req.method} ${req.originalUrl}`);
+    console.warn('Body:', req.body);
     next();
 });
 
@@ -37,8 +43,8 @@ app.use('/api/users', userRoutes);
 // Error Handling Middleware
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT ?? 5000;
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.warn(`Server running on port ${PORT}`);
 });
