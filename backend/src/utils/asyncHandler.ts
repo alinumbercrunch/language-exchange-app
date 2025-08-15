@@ -1,20 +1,30 @@
-import { Request, Response, NextFunction } from 'express';
-import { AsyncRequestHandler } from '../types/declarations';
+/**
+ * Async Handler Utility - Express error handling wrapper
+ * Automatically catches and handles errors in async route handlers
+ */
+
+import type { Request, Response, NextFunction } from 'express';
+import type { AsyncRequestHandler, AuthenticatedRequest } from '../types/declarations';
 import { ResponseHelper } from './responseHelpers';
 
 /**
- * Enhanced async handler with improved error handling and logging
- * Wraps async functions to automatically catch and handle errors
+ * Enhanced async handler with improved error handling and logging.
+ * Wraps async functions to automatically catch and handle errors without try-catch blocks.
+ *
+ * @param fn - Async request handler function to wrap
+ * @returns Express middleware function that handles errors automatically
  */
-const asyncHandler = <T = Request>(fn: AsyncRequestHandler<T>) =>
+const asyncHandler =
+    <T = Request>(fn: AsyncRequestHandler<T>) =>
     (req: T, res: Response, next: NextFunction) => {
         Promise.resolve(fn(req, res, next)).catch((error) => {
-            // Log the error for debugging purposes
+            // Log the error for debugging purposes (safe property access)
+            const requestInfo = req && typeof req === 'object' ? (req as unknown as Request) : null;
             console.error('AsyncHandler Error:', {
-                path: (req as any).path,
-                method: (req as any).method,
-                error: error.message,
-                stack: error.stack
+                path: requestInfo?.path ?? 'unknown',
+                method: requestInfo?.method ?? 'unknown',
+                error: error instanceof Error ? error.message : 'Unknown error',
+                stack: error instanceof Error ? error.stack : undefined,
             });
 
             // If headers are already sent, delegate to Express error handler
@@ -34,8 +44,14 @@ const asyncHandler = <T = Request>(fn: AsyncRequestHandler<T>) =>
 
             // Handle MongoDB duplicate key errors
             if (error.code === 11000) {
-                const field = Object.keys(error.keyValue)[0];
-                return ResponseHelper.error(res, `${field} already exists`, 400);
+                const keyValue = error.keyValue;
+                if (keyValue && typeof keyValue === 'object') {
+                    const field = Object.keys(keyValue)[0];
+                    if (field) {
+                        return ResponseHelper.error(res, `${field} already exists`, 400);
+                    }
+                }
+                return ResponseHelper.error(res, 'Duplicate entry detected', 400);
             }
 
             // Handle JWT errors
@@ -56,7 +72,8 @@ const asyncHandler = <T = Request>(fn: AsyncRequestHandler<T>) =>
  * Specialized async handler for authenticated routes
  * Automatically checks for user authentication
  */
-export const authenticatedAsyncHandler = <T extends { user?: any }>(fn: AsyncRequestHandler<T>) =>
+export const authenticatedAsyncHandler =
+    <T extends AuthenticatedRequest>(fn: AsyncRequestHandler<T>) =>
     (req: T, res: Response, next: NextFunction) => {
         if (!req.user) {
             return ResponseHelper.error(res, 'Authentication required', 401);
@@ -66,4 +83,3 @@ export const authenticatedAsyncHandler = <T extends { user?: any }>(fn: AsyncReq
     };
 
 export default asyncHandler;
-
