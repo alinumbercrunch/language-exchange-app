@@ -1,9 +1,10 @@
 'use client'; // This directive makes this a Client Component
 
 import { useCallback } from 'react';
-import { useAsync } from '../hooks/useAsync';
-import { API_CONFIG } from '../constants/apiConstants';
+
 import AppError from '../../../shared/appError';
+import { API_CONFIG } from '../constants/apiConstants';
+import { useAsync } from '../hooks/useAsync';
 
 // This function contains the actual API call logic.
 // We define it outside the component so it can be memoized with useCallback.
@@ -38,10 +39,10 @@ async function testBackendConnection(): Promise<string> {
 
       {/* Display API Response or Error */}
       <div className="mt-8 p-4 bg-gray-100 rounded-lg shadow-md w-full max-w-md text-center">
-        <h2 className="text-xl font-semibold mb-2">Backend Connection Status:</h2>
-        {isLoading && <p className="text-gray-500 font-medium">Loading...</p>}
-        {error && <p className="text-red-600 font-medium">{error.message}</p>}
-        {apiResponse && <p className="text-green-700 font-medium">{apiResponse}</p>}
+        <h2 className="text-xl font-semibold mb-2">Server Status:</h2>
+        {isLoading && <p className="text-gray-500 font-medium">Checking connection...</p>}
+        {error && <p className="text-red-600 font-medium">❌ Server offline: {error.message}</p>}
+        {apiResponse && <p className="text-green-700 font-medium">✅ Server is running successfully!</p>}
       </div>
     </main>
   );

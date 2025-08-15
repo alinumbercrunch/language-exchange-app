@@ -1,4 +1,4 @@
-import { IUserRegistrationRequest } from '../../../shared/user.interface';
+import type { IUserRegistrationRequest } from '../../../shared/user.interface';
 
 /**
  * Safely sets nested object values in a form data structure
