@@ -4,6 +4,13 @@ import { setNestedValue } from '../utils/formHelpers';
 
 import type { IUserRegistrationRequest } from '../../../shared/user.interface';
 
+/**
+ * A custom hook for managing form state with nested object support.
+ * Provides handlers for form field changes, form reset, and direct state updates.
+ * 
+ * @param initialData - Initial form data object
+ * @returns Object containing current form data, change handler, reset function, and setter
+ */
 export function useFormState(initialData: IUserRegistrationRequest) {
     const [formData, setFormData] = useState<IUserRegistrationRequest>(initialData);
 

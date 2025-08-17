@@ -8,6 +8,7 @@ import { PageHeader } from '../../components/layout/PageHeader';
 import { Button } from '../../components/ui/Button';
 import { DEFAULT_REGISTRATION_DATA } from '../../constants/formConstants';
 import { useFormState } from '../../hooks/useFormState';
+import { useFormValidation } from '../../hooks/useFormValidation';
 import { registerUser } from '../../services/userService';
 
 /**
@@ -18,15 +19,21 @@ import { registerUser } from '../../services/userService';
  */
 export const RegisterForm: React.FC = () => {
     const { formData, handleChange, resetForm } = useFormState(DEFAULT_REGISTRATION_DATA);
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const { errors, validateForm, clearErrors } = useFormValidation();
     const [isLoading, setIsLoading] = useState(false);
     const [successMessage, setSuccessMessage] = useState<string>('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        setErrors({});
+        clearErrors();
         setSuccessMessage('');
+
+        // Client-side validation
+        if (!validateForm(formData)) {
+            setIsLoading(false);
+            return;
+        }
         
         try {
             const result = await registerUser(formData);
@@ -36,9 +43,9 @@ export const RegisterForm: React.FC = () => {
         } catch (error) {
             if (error instanceof Error) {
                 // Handle validation errors or other specific errors
-                setErrors({ general: error.message });
-            } else {
-                setErrors({ general: 'An unexpected error occurred. Please try again.' });
+                // For server-side errors, we'll display them as general errors for now
+                // TODO: Map server validation errors to specific fields
+                console.error('Registration error:', error.message);
             }
         } finally {
             setIsLoading(false);

@@ -1,4 +1,7 @@
-// backend/src/models/User.ts
+/**
+ * User Model - Mongoose schema and model for user data
+ * Defines user document structure, validation, and database operations
+ */
 
 import mongoose, { Schema } from 'mongoose';
 import * as bcrypt from 'bcrypt';
@@ -7,11 +10,12 @@ import { IUserDocument } from '../types/declarations';
 import { getNames as getCountryNames } from 'country-list';
 import iso6391 from 'iso-639-1';
 
+// Get supported countries and languages for validation
 const supportedCountries = getCountryNames();
 const supportedLanguages = iso6391.getAllNames();
 
 /**
- * Mongoose schema for the User model.
+ * Mongoose schema definition for User documents with validation and indexing.
  */
 const UserSchema = new Schema<IUserDocument>({
     username: {
