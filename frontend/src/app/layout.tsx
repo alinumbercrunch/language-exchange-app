@@ -1,8 +1,6 @@
-import type { Metadata } from 'next';
+import './globals.css'; // ✅ Make sure Tailwind's directives live here
 
-import './globals.css';
-
-export const metadata: Metadata = {
+export const metadata = {
   title: 'Language Exchange',
   description: 'Connect and converse globally',
 };
@@ -11,11 +9,7 @@ export const metadata: Metadata = {
  * The root layout for the application.
  * It sets up the basic HTML structure and includes global styles.
  */
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+  export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className="bg-white text-gray-900">{children}</body>

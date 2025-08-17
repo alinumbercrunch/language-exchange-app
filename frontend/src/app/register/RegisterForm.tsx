@@ -1,28 +1,56 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 
-import { RegisterFormActions, RegisterMessages } from './components';
-import { useRegisterForm } from './hooks/useRegisterForm';
 import { RegistrationFormFields } from './RegistrationFormFields';
 import { Container } from '../../components/layout/Container';
 import { PageHeader } from '../../components/layout/PageHeader';
+import { Button } from '../../components/ui/Button';
+import { DEFAULT_REGISTRATION_DATA } from '../../constants/formConstants';
+import { useFormState } from '../../hooks/useFormState';
+import { useFormValidation } from '../../hooks/useFormValidation';
+import { registerUser } from '../../services/userService';
 
 /**
- * Main registration form component.
- * Coordinates between business logic (hooks) and UI components.
- * Demonstrates separation of concerns architecture.
+ * Registration form component for user signup.
+ * Handles user input, validation, and submission to the backend API.
+ * 
+ * @returns A complete registration form with validation and error handling
  */
 export const RegisterForm: React.FC = () => {
-    const {
-        formData,
-        handleChange,
-        handleSubmit,
-        handleReset,
-        errors,
-        isLoading,
-        successMessage,
-    } = useRegisterForm();
+    const { formData, handleChange, resetForm } = useFormState(DEFAULT_REGISTRATION_DATA);
+    const { errors, validateForm, clearErrors } = useFormValidation();
+    const [isLoading, setIsLoading] = useState(false);
+    const [successMessage, setSuccessMessage] = useState<string>('');
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        clearErrors();
+        setSuccessMessage('');
+
+        // Client-side validation
+        if (!validateForm(formData)) {
+            setIsLoading(false);
+            return;
+        }
+        
+        try {
+            const result = await registerUser(formData);
+            const userName = result.user?.firstName || result.user?.username || 'User';
+            setSuccessMessage(`Registration successful! Welcome, ${userName}!`);
+            resetForm();
+        } catch (error) {
+            if (error instanceof Error) {
+                // Handle validation errors or other specific errors
+                // For server-side errors, we'll display them as general errors for now
+                // TODO: Map server validation errors to specific fields
+                console.error('Registration error:', error.message);
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <Container size="md" className="py-8">
@@ -31,10 +59,19 @@ export const RegisterForm: React.FC = () => {
                 subtitle="Join our language exchange community and start practicing with native speakers"
             />
             
-            <RegisterMessages 
-                successMessage={successMessage} 
-                generalError={errors.general} 
-            />
+            {/* Success Message */}
+            {successMessage && (
+                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-md">
+                    <p className="text-green-800">{successMessage}</p>
+                </div>
+            )}
+            
+            {/* General Error Message */}
+            {errors.general && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md">
+                    <p className="text-red-800">{errors.general}</p>
+                </div>
+            )}
 
             <form onSubmit={handleSubmit} className="bg-white shadow-sm border border-gray-200 rounded-lg p-6">
                 <RegistrationFormFields
@@ -43,10 +80,23 @@ export const RegisterForm: React.FC = () => {
                     errors={errors}
                 />
                 
-                <RegisterFormActions
-                    isLoading={isLoading}
-                    onReset={handleReset}
-                />
+                <div className="mt-8 flex justify-end space-x-4">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={resetForm}
+                        disabled={isLoading}
+                    >
+                        Reset Form
+                    </Button>
+                    <Button
+                        type="submit"
+                        isLoading={isLoading}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Creating Account...' : 'Create Account'}
+                    </Button>
+                </div>
             </form>
         </Container>
     );
