@@ -1,2 +1,2 @@
-export { RegisterFormActions } from './RegisterFormActions';
-export { RegisterMessages } from './RegisterMessages';
+export { RegisterFormActions } from "./RegisterFormActions";
+export { RegisterMessages } from "./RegisterMessages";

@@ -4,48 +4,43 @@
  */
 
 // API utilities
-export { api, apiRequest } from './apiClient';
+export { api, apiRequest } from "./apiClient";
 
 // Form utilities
-export { setNestedValue } from './formHelpers';
+export { setNestedValue } from "./formHelpers";
 
 // Validation utilities
-export { 
-  validateEmail, 
-  validatePassword, 
-  validateRequired, 
-  validateUsername, 
-  validateAge,
-  type ValidationResult,
-  type PasswordRequirements 
-} from './validation';
+export {
+	validateEmail,
+	validatePassword,
+	validateRequired,
+	validateUsername,
+	validateAge,
+	type ValidationResult,
+	type PasswordRequirements
+} from "./validation";
 
 // Storage utilities
-export { 
-  getStorageItem, 
-  setStorageItem, 
-  removeStorageItem, 
-  clearStorage, 
-  isStorageAvailable, 
-  tokenStorage,
-  STORAGE_KEYS,
-  type StorageKey 
-} from './localStorage';
+export {
+	getStorageItem,
+	setStorageItem,
+	removeStorageItem,
+	clearStorage,
+	isStorageAvailable,
+	tokenStorage,
+	STORAGE_KEYS,
+	type StorageKey
+} from "./localStorage";
 
 // Styling utilities
-export { 
-  classNames, 
-  conditionalClasses, 
-  commonStyles, 
-  sizeStyles, 
-  getResponsiveTextSize, 
-  loadingClasses 
-} from './classNames';
+export {
+	classNames,
+	conditionalClasses,
+	commonStyles,
+	sizeStyles,
+	getResponsiveTextSize,
+	loadingClasses
+} from "./classNames";
 
 // Logging utilities
-export { 
-  logger, 
-  loggers, 
-  performanceLogger,
-  LogLevel 
-} from './logger';
+export { logger, loggers, performanceLogger, LogLevel } from "./logger";

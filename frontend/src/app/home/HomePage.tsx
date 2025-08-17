@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 
-import { HomeFooter, HomeHeader, HomeHero, HomeMainContent } from './components';
-import { useHomePage } from './hooks/useHomePage';
+import { HomeFooter, HomeHeader, HomeHero, HomeMainContent } from "./components";
+import { useHomePage } from "./hooks/useHomePage";
 
 /**
  * Main home page component.
@@ -11,14 +11,14 @@ import { useHomePage } from './hooks/useHomePage';
  * Demonstrates separation of concerns architecture.
  */
 export function HomePage() {
-  const { } = useHomePage();
+	const {} = useHomePage();
 
-  return (
-    <div className="min-h-screen bg-white">
-      <HomeHeader brandName="MeGoodSpeak" />
-      <HomeHero />
-      <HomeMainContent />
-      <HomeFooter />
-    </div>
-  );
+	return (
+		<div className="min-h-screen bg-white">
+			<HomeHeader brandName="MeGoodSpeak" />
+			<HomeHero />
+			<HomeMainContent />
+			<HomeFooter />
+		</div>
+	);
 }
