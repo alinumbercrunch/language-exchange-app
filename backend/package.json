@@ -8,6 +8,8 @@
     "build": "tsc",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix"
+  ,
+  "format": "prettier --write ."
   },
   "repository": {
     "type": "git",
