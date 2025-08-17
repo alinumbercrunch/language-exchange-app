@@ -25,38 +25,40 @@ export interface JwtPayload {
 export class AuthService {
     /**
      * Generate JWT token for authenticated user.
-     * 
+     *
      * @param userId - User's MongoDB ObjectId as string
      * @returns Signed JWT token with 30-day expiration
      * @throws {AppError} When JWT secret is not configured
      */
     static generateToken(userId: string): string {
         if (!process.env.JWT_SECRET) {
-            throw new AppError(ERROR_MESSAGES.AUTH.JWT_SECRET_NOT_CONFIGURED, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+            throw new AppError(
+                ERROR_MESSAGES.AUTH.JWT_SECRET_NOT_CONFIGURED,
+                HTTP_STATUS.INTERNAL_SERVER_ERROR
+            );
         }
 
-        return jwt.sign(
-            { id: userId }, 
-            process.env.JWT_SECRET, 
-            { expiresIn: '30d' }
-        );
+        return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '30d' });
     }
 
     /**
      * Verify JWT token and extract payload data.
-     * 
+     *
      * @param token - JWT token to verify
      * @returns Decoded token payload
      * @throws {AppError} When JWT secret is not configured or token is invalid
      */
     static verifyToken(token: string): JwtPayload {
         if (!process.env.JWT_SECRET) {
-            throw new AppError(ERROR_MESSAGES.AUTH.JWT_SECRET_NOT_CONFIGURED, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+            throw new AppError(
+                ERROR_MESSAGES.AUTH.JWT_SECRET_NOT_CONFIGURED,
+                HTTP_STATUS.INTERNAL_SERVER_ERROR
+            );
         }
 
         try {
             return jwt.verify(token, process.env.JWT_SECRET) as JwtPayload;
-        } catch (error) {
+        } catch {
             throw new AppError(ERROR_MESSAGES.AUTH.INVALID_TOKEN, HTTP_STATUS.UNAUTHORIZED);
         }
     }
@@ -65,7 +67,7 @@ export class AuthService {
      * Extract token from Authorization header
      */
     static extractTokenFromHeader(authHeader: string | undefined): string {
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        if (!authHeader?.startsWith('Bearer ')) {
             throw new AppError(ERROR_MESSAGES.AUTH.NO_TOKEN_PROVIDED, HTTP_STATUS.UNAUTHORIZED);
         }
 

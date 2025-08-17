@@ -5,8 +5,8 @@
 
 import User from '../models/User';
 import AppError from '../../../shared/appError';
-import { IUserRegistrationRequest } from '../../../shared/user.interface';
-import { IUserDocument } from '../types/declarations';
+import type { IUserRegistrationRequest } from '../../../shared/user.interface';
+import type { IUserDocument } from '../types/declarations';
 import { AuthService } from './authService';
 import { ERROR_MESSAGES, HTTP_STATUS, VALIDATION_MESSAGES } from '../constants/validationConstants';
 
@@ -16,7 +16,7 @@ import { ERROR_MESSAGES, HTTP_STATUS, VALIDATION_MESSAGES } from '../constants/v
 export class UserService {
     /**
      * Check if user exists by email or username to prevent duplicates.
-     * 
+     *
      * @param email - Email address to check
      * @param username - Username to check
      * @throws {AppError} When user already exists with given email or username
@@ -24,7 +24,7 @@ export class UserService {
      */
     static async checkUserExists(email: string, username: string): Promise<void> {
         const existingUser = await User.findOne({
-            $or: [{ email }, { username }]
+            $or: [{ email }, { username }],
         });
 
         if (existingUser) {
@@ -39,12 +39,14 @@ export class UserService {
 
     /**
      * Create new user with validation and return user data with authentication token.
-     * 
+     *
      * @param userData - User registration data including profile information
      * @returns Promise resolving to object containing saved user and JWT token
      * @throws {AppError} When user already exists or validation fails
      */
-    static async createUser(userData: IUserRegistrationRequest): Promise<{ user: IUserDocument; token: string }> {
+    static async createUser(
+        userData: IUserRegistrationRequest
+    ): Promise<{ user: IUserDocument; token: string }> {
         // Check for existing users
         await this.checkUserExists(userData.email, userData.username);
 
@@ -62,33 +64,39 @@ export class UserService {
         });
 
         const savedUser = await newUser.save();
-        
+
         // Generate token using Mongoose virtual id getter for safety
         // Generate token using Mongoose's virtual 'id' getter (string representation of _id)
         const token = AuthService.generateToken(savedUser.id);
-        
+
         return { user: savedUser, token };
     }
 
     /**
      * Authenticate user credentials and return user data with token.
-     * 
+     *
      * @param email - User's email address
      * @param password - User's plain text password
      * @returns Promise resolving to object containing user and JWT token
      * @throws {AppError} When credentials are invalid
      */
-    static async authenticateUser(email: string, password: string): Promise<{ user: IUserDocument; token: string }> {
+    static async authenticateUser(
+        email: string,
+        password: string
+    ): Promise<{ user: IUserDocument; token: string }> {
         const user = await User.findOne({ email }).select('+passwordHash');
-        
+
         if (!user) {
             throw new AppError(ERROR_MESSAGES.USER.INVALID_CREDENTIALS, HTTP_STATUS.UNAUTHORIZED);
         }
 
         const isMatch = await user.matchPassword(password);
-        
+
         if (!isMatch) {
-            throw new AppError(ERROR_MESSAGES.USER.INVALID_EMAIL_PASSWORD, HTTP_STATUS.UNAUTHORIZED);
+            throw new AppError(
+                ERROR_MESSAGES.USER.INVALID_EMAIL_PASSWORD,
+                HTTP_STATUS.UNAUTHORIZED
+            );
         }
 
         // Generate token using Mongoose virtual id getter for safety
@@ -99,14 +107,14 @@ export class UserService {
 
     /**
      * Get user by ID for protected routes and profile access.
-     * 
+     *
      * @param userId - MongoDB ObjectId as string
      * @returns Promise resolving to user document
      * @throws {AppError} When user is not found
      */
     static async getUserById(userId: string): Promise<IUserDocument> {
         const user = await User.findById(userId);
-        
+
         if (!user) {
             throw new AppError(ERROR_MESSAGES.USER.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
         }
@@ -119,7 +127,7 @@ export class UserService {
      */
     static async deleteUser(userId: string): Promise<void> {
         const deletedUser = await User.findByIdAndDelete(userId);
-        
+
         if (!deletedUser) {
             throw new AppError(ERROR_MESSAGES.USER.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
         }
@@ -128,7 +136,10 @@ export class UserService {
     /**
      * Update user profile
      */
-    static async updateUser(userId: string, updateData: Partial<IUserRegistrationRequest>): Promise<IUserDocument> {
+    static async updateUser(
+        userId: string,
+        updateData: Partial<IUserRegistrationRequest>
+    ): Promise<IUserDocument> {
         const user = await User.findById(userId);
 
         if (!user) {
@@ -144,7 +155,7 @@ export class UserService {
         if (updateData.profileOptions) {
             user.profileOptions = { ...user.profileOptions, ...updateData.profileOptions };
         }
-        
+
         // Save the updated user document
         const updatedUser = await user.save();
         return updatedUser;
