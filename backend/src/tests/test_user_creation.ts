@@ -2,9 +2,8 @@
 
 import mongoose from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import User from '../models/User';      
-import connectDB from '../config/db';   
-
+import User from '../models/User';
+import connectDB from '../config/db';
 
 async function runUserCreationTest() {
     try {
@@ -64,35 +63,43 @@ async function runUserCreationTest() {
         if (typeof userJson._id === 'string' && userJson._id.length > 0) {
             console.log(`✅ Check 1: '_id' is a string and not empty.`);
         } else {
-            console.log(`❌ Check 1: '_id' is NOT a string or is empty. (Type: ${typeof userJson._id}, Value: ${userJson._id})`);
+            console.log(
+                `❌ Check 1: '_id' is NOT a string or is empty. (Type: ${typeof userJson._id}, Value: ${userJson._id})`
+            );
         }
 
-        if (!userJson.hasOwnProperty('passwordHash')) {
-            console.log('✅ Check 2: \'passwordHash\' is NOT present in toJSON output.');
+        if (!Object.prototype.hasOwnProperty.call(userJson, 'passwordHash')) {
+            console.log("✅ Check 2: 'passwordHash' is NOT present in toJSON output.");
         } else {
-            console.log('❌ Check 2: \'passwordHash\' IS present in toJSON output!');
+            console.log("❌ Check 2: 'passwordHash' IS present in toJSON output!");
         }
 
         if (userJson.username === testUsername) {
-            console.log(`✅ Check 3: 'username' matches the created test username: ${userJson.username}`);
+            console.log(
+                `✅ Check 3: 'username' matches the created test username: ${userJson.username}`
+            );
         } else {
-            console.log(`❌ Check 3: 'username' mismatch. Expected '${testUsername}', Got '${userJson.username}'.`);
+            console.log(
+                `❌ Check 3: 'username' mismatch. Expected '${testUsername}', Got '${userJson.username}'.`
+            );
         }
 
         if (typeof userJson.isActive === 'boolean') {
             console.log(`✅ Check 4: 'isActive' is a boolean: ${userJson.isActive}`);
         } else {
-            console.log(`❌ Check 4: 'isActive' is NOT a boolean. (Type: ${typeof userJson.isActive}, Value: ${userJson.isActive})`);
+            console.log(
+                `❌ Check 4: 'isActive' is NOT a boolean. (Type: ${typeof userJson.isActive}, Value: ${userJson.isActive})`
+            );
         }
 
         console.log('\n--- Test Results ---');
         console.log('All checks complete.');
-
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('\n--- Test FAILED ---');
         console.error('An error occurred during the test:');
-        console.error('Error Message:', error.message);
-        if (error.errors) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown test error';
+        console.error('Error Message:', errorMessage);
+        if (error instanceof Error && 'errors' in error) {
             console.error('Mongoose Validation Errors Details:', error.errors);
         }
     } finally {

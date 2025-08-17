@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+
 import AppError from '../../../shared/appError';
 
 /**
@@ -36,9 +37,12 @@ export function useAsync<T>(asyncFunction: () => Promise<T>, immediate = true) {
     }
   }, [asyncFunction]);
 
-  // If immediate is true, run the effect on mount
-  // Note: This part is simplified and may not be needed if you always call execute manually
-  // For a robust solution, you might use useEffect with a dependency on `immediate`
+  // Execute immediately on mount if requested
+  useEffect(() => {
+    if (immediate) {
+      execute();
+    }
+  }, [execute, immediate]);
 
   return { data, error, isLoading, execute };
 }
